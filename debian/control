@@ -12,6 +12,7 @@ Vcs-Git: https://github.com/Whonix/grub-live.git
 Standards-Version: 4.3.0
 
 Package: grub-live
+Provides: grub-live-boot
 Architecture: all
 Depends: live-boot, live-config-systemd, live-boot-initramfs-tools, live-tools, ${misc:Depends}
 Description: grub live boot menu entry
