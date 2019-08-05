@@ -1,3 +1,19 @@
+commit 2f4c85e16a65172c42ba687b0734c4855272edfd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Aug 5 05:05:04 2019 -0400
+
+    remove unneeded dependency live-config-systemd
+    
+    since causing log spam /lib/systemd/system-generators/live-config-getty-generator
+    
+    https://forums.whonix.org/t/whonix-live-mode-amnesia-amnesic-non-persistent-anti-forensics/3894/158
+
+commit dc589a4e3698ea2fca08f2079691c5b9120f930b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Aug 1 11:40:07 2019 +0000
+
+    bumped changelog version
+
 commit f218ae434c04c5c5de2ec737d9132f68fa516889
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Aug 1 11:13:38 2019 +0000
