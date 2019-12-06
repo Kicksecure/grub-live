@@ -1,3 +1,15 @@
+commit 9aa9f9482bf353d5aa1d189e64b1ff45926bdd0c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Dec 5 15:48:24 2019 -0500
+
+    remove duplication
+
+commit 870da602532ae80f2049e927edbae2883fcd7270
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Mon Aug 5 09:13:10 2019 +0000
+
+    bumped changelog version
+
 commit 2f4c85e16a65172c42ba687b0734c4855272edfd
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Aug 5 05:05:04 2019 -0400
