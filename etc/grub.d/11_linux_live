@@ -4,7 +4,7 @@ set -e
 GRUB_DEVICE="/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
 unset GRUB_DEVICE_UUID
 GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX boot=live plainroot union=overlay ip=frommedia noeject nopersistence"
-GRUB_DISTRIBUTOR="${GRUB_DISTRIBUTOR} Live-mode"
+GRUB_DISTRIBUTOR="LIVE mode"
 GRUB_DISABLE_RECOVERY="true"
 
 export \
