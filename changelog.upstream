@@ -1,3 +1,47 @@
+commit d44e3814729243ee4f60a860ac0abd2eb4bb435b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 13 10:52:17 2019 -0500
+
+    disable grub sub menu "Advanced options for" for LIVE mode
+
+commit 7d8b9bc911f4a5c80f05a0e6c52a18d585188ceb
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 13 10:37:37 2019 -0500
+
+    change LIVE mode
+    to
+    LIVE mode USER (For daily activities.)
+
+commit e0a9d6665c57ba6eac54a2b1c658310310d57124
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 13 09:54:17 2019 -0500
+
+    fix shebang
+
+commit df4ff35053e5f057f439a199e27b0f066a30abd6
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 13 09:53:57 2019 -0500
+
+    copyright
+
+commit d8229a32e59d81a32f516852a34a786becf1594f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 13 04:38:30 2019 -0500
+
+    change "Whonix Live-mode GNU/Linux" to "LIVE mode GNU/Linux"
+
+commit 9b67a02897a62bff7b110f2f15aab9eefc554ba4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 13 02:04:24 2019 -0500
+
+    disable live mode for recovery mode grub default menu entry
+
+commit 5ca5f94ab28b2cc9014433a90f50a8ea75d220c4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Dec 6 09:31:37 2019 -0500
+
+    bumped changelog version
+
 commit 9aa9f9482bf353d5aa1d189e64b1ff45926bdd0c
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Dec 5 15:48:24 2019 -0500
