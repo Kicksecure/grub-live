@@ -1,3 +1,27 @@
+commit 1989d6e12ac4e5eec03ed3b492c4c84fd6695fd9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 29 12:38:20 2021 -0400
+
+    add dracut support
+    
+    Based on, and thanks to @friedrich12!
+    
+    https://github.com/friedrich12/dracut-grub-live
+    
+    https://forums.whonix.org/t/replacing-initramfs-tools-with-dracut/4487/10
+
+commit e71c0b18281985ffdf60adb2917ef874596a5e76
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 29 12:32:22 2021 -0400
+
+    refactoring
+
+commit a540bdd3e4955e255e0098d946291e68204d74de
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Aug 5 16:42:18 2021 -0400
+
+    bumped changelog version
+
 commit a27856e309a528044b1287c2c9c17202f382ea61
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Aug 3 12:48:53 2021 -0400
