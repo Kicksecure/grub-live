@@ -1,3 +1,25 @@
+commit cb94f18bd47a56d0427e9ae822f966f32fd55f2e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 29 15:19:44 2021 -0400
+
+    fix, remove dracut `kernel_cmdline="rootovl"`
+    
+    since that is conditionally set in grub boot menu anyhow
+    
+    and otherwise the system would always boot into live mode
+
+commit 3bded2153eb311ee6f8571bf67483d3514d97ed0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 29 15:19:09 2021 -0400
+
+    remove dracut `hostonly="yes"` since that's Debian default anyhow
+
+commit 3a81ecd14d6f88b4b09229d868228a990e67a74b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 29 14:31:41 2021 -0400
+
+    bumped changelog version
+
 commit 1989d6e12ac4e5eec03ed3b492c4c84fd6695fd9
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Aug 29 12:38:20 2021 -0400
