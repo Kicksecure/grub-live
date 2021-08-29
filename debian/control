@@ -15,7 +15,9 @@ Rules-Requires-Root: no
 Package: grub-live
 Provides: grub-live-boot, boot-live
 Architecture: all
-Depends: live-boot, live-boot-initramfs-tools, live-tools,
+Depends: dracut | live-boot,
+ dracut | live-boot-initramfs-tools,
+ dracut | live-tools,
  ${misc:Depends}
 Description: grub live boot menu entry
  Allows booting the system in live mode. Meaning, no persistent modifications
