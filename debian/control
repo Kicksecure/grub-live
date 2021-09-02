@@ -15,7 +15,8 @@ Rules-Requires-Root: no
 Package: grub-live
 Provides: grub-live-boot, boot-live
 Architecture: all
-Depends: dracut | live-boot,
+Depends: dracut | initramfs-tools,
+ dracut | live-boot,
  dracut | live-boot-initramfs-tools,
  dracut | live-tools,
  ${misc:Depends}
