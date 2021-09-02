@@ -1,13 +1,8 @@
-# grub live boot menu entry #
+# grub live initramfs-tools dependencies #
 
-Allows booting the system in live mode. Meaning, no persistent modifications
-will be written to the disk. All changes stay in RAM.
+initramfs-tools version metapackage for grub-live
 
-Adds a grub live boot menu entry.
-
-Existing grub boot entries stay unmodified.
-
-No claims are made with regard to anti forensics.
+See also grub-live package.
 ## How to install `grub-live` using apt-get ##
 
 1\. Download Whonix's Signing Key.
