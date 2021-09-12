@@ -18,6 +18,14 @@ GRUB_DISTRIBUTOR="LIVE mode USER (For daily activities.)"
 GRUB_DISABLE_RECOVERY="true"
 GRUB_DISABLE_SUBMENU="y"
 
+if dpkg-query --show initramfs-tools &>/dev/null ; then
+   ## https://forums.whonix.org/t/bullseye-live-boot-needs-grub-disable-linux-uuid-true-parameter-in-etc-grub-d-11-linux-live/9066
+   ## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=994138
+   ## https://askubuntu.com/a/283320
+   GRUB_DISABLE_LINUX_UUID="true"
+   export GRUB_DISABLE_LINUX_UUID
+fi
+
 export \
    GRUB_DEVICE \
    GRUB_CMDLINE_LINUX \
