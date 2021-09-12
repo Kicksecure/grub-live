@@ -1,3 +1,18 @@
+commit 42e806430a90829c8f06df873a1aa82a0c05a4ca
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Sep 12 14:30:24 2021 -0400
+
+    fix grub-live (initramfs-tools version)
+    
+    https://forums.whonix.org/t/bullseye-live-boot-needs-grub-disable-linux-uuid-true-parameter-in-etc-grub-d-11-linux-live/9066
+    https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=994138
+
+commit 656c8bc4d46eb9143ad4588628a18fb68a5687cf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Sep 11 18:42:15 2021 -0400
+
+    bumped changelog version
+
 commit c749a3cba1ddf975088c6474cbd10253ffd82817
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Sep 11 16:31:22 2021 -0400
