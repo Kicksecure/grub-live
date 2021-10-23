@@ -1,3 +1,9 @@
+grub-live (3:3.4-1) unstable; urgency=medium
+
+  * New upstream version (local package).
+
+ -- Patrick Schleizer <adrelanos@whonix.org>  Sat, 23 Oct 2021 13:22:58 +0000
+
 grub-live (3:3.3-1) unstable; urgency=medium
 
   * New upstream version (local package).
