@@ -38,7 +38,7 @@ Description: grub live dracut dependencies
 Package: grub-live
 Provides: grub-live-boot, boot-live
 Architecture: all
-Depends: grub-live-dracut | grub-live-initramfs-tools,
+Depends: grub-live-initramfs-tools | grub-live-dracut,
  ${misc:Depends}
 Description: grub live boot menu entry
  Allows booting the system in live mode. Meaning, no persistent modifications
