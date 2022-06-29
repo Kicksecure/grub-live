@@ -1,3 +1,15 @@
+commit a7256d2a677ea5ebf19a8719c1318460d3774eac
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 29 11:09:56 2022 -0400
+
+    fix dracut support
+
+commit abcb9cbf7df768447b9a81bf9b8fce721157ae84
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed May 25 06:05:47 2022 -0400
+
+    bumped changelog version
+
 commit 82f5371924e3cfb3ce06e3ec089b0492a63a56a9
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri May 20 15:27:05 2022 -0400
