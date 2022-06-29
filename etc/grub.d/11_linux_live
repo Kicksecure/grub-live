@@ -18,7 +18,8 @@ GRUB_DISTRIBUTOR="LIVE mode USER (For daily activities.)"
 GRUB_DISABLE_RECOVERY="true"
 GRUB_DISABLE_SUBMENU="y"
 
-if dpkg-query --show initramfs-tools &>/dev/null ; then
+## Cannot use '&>' because it is a bashism.
+if dpkg-query --show initramfs-tools 1>/dev/null 2>/dev/null ; then
    ## https://forums.whonix.org/t/bullseye-live-boot-needs-grub-disable-linux-uuid-true-parameter-in-etc-grub-d-11-linux-live/9066
    ## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=994138
    ## https://askubuntu.com/a/283320
