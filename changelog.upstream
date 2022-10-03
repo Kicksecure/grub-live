@@ -1,3 +1,27 @@
+commit 3925268347981a0f711b6e7f1939be2dfe97cb65
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 3 08:20:20 2022 -0400
+
+    refactoring
+
+commit 71c3b68334191594f1f2ea578911130a73a5f2f4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 3 08:16:48 2022 -0400
+
+    keep grub live boot menu related entries grouped together,
+    instead of having one entry per installed kernel
+    implemented by removing `GRUB_DISABLE_SUBMENU=y`
+    
+    Thanks to @TNT_BOM_BOM for the suggestion!
+    
+    https://forums.whonix.org/t/reduce-numbers-of-grub-live-mode-boot-menu-entries/15710
+
+commit 30fcf7594ce5fffc13b21ca870c9880eeaf95f3f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 29 11:18:35 2022 -0400
+
+    bumped changelog version
+
 commit a7256d2a677ea5ebf19a8719c1318460d3774eac
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jun 29 11:09:56 2022 -0400
