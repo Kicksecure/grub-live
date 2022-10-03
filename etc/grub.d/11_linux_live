@@ -5,6 +5,8 @@
 
 set -e
 
+set -o allexport
+
 GRUB_DEVICE="/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
 unset GRUB_DEVICE_UUID
 
@@ -23,14 +25,7 @@ if dpkg-query --show initramfs-tools 1>/dev/null 2>/dev/null ; then
    ## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=994138
    ## https://askubuntu.com/a/283320
    GRUB_DISABLE_LINUX_UUID="true"
-   export GRUB_DISABLE_LINUX_UUID
 fi
-
-export \
-   GRUB_DEVICE \
-   GRUB_CMDLINE_LINUX \
-   GRUB_DISTRIBUTOR \
-   GRUB_DISABLE_RECOVERY
 
 if test -x /etc/grub.d/10_linux ; then
 	/etc/grub.d/10_linux
