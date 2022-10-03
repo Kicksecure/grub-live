@@ -16,7 +16,6 @@ GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl"
 
 GRUB_DISTRIBUTOR="LIVE mode USER (For daily activities.)"
 GRUB_DISABLE_RECOVERY="true"
-GRUB_DISABLE_SUBMENU="y"
 
 ## Cannot use '&>' because it is a bashism.
 if dpkg-query --show initramfs-tools 1>/dev/null 2>/dev/null ; then
@@ -31,8 +30,7 @@ export \
    GRUB_DEVICE \
    GRUB_CMDLINE_LINUX \
    GRUB_DISTRIBUTOR \
-   GRUB_DISABLE_RECOVERY \
-   GRUB_DISABLE_SUBMENU
+   GRUB_DISABLE_RECOVERY
 
 if test -x /etc/grub.d/10_linux ; then
 	/etc/grub.d/10_linux
