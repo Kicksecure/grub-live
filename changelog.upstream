@@ -1,3 +1,17 @@
+commit 2ac07084e08b27c1aa843d11463d2da1f89a97a5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 7 16:52:50 2023 -0400
+
+    fix dracut compatibility
+    
+    https://forums.kicksecure.com/t/dracut-debain-12-kicksecure-distromorph-for-ram-wipe/274
+
+commit 82e5a899f187c4ff7c3de9905d3a7252b1152471
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jun 21 09:17:33 2023 +0000
+
+    bumped changelog version
+
 commit 239428e3da2357e8425031f58114fbb0d13c5d93
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jun 21 09:11:27 2023 +0000
