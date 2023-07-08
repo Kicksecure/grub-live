@@ -14,7 +14,10 @@ unset GRUB_DEVICE_UUID
 GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX boot=live plainroot union=overlay ip=frommedia noeject nopersistence"
 
 ## dracut support
+## using rootovl (tested)
 GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl"
+## using overlayfs (untested)
+#GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.overlayfs=1 rd.live.overlay.readonly=1"
 
 GRUB_DISTRIBUTOR="LIVE mode USER (For daily activities.)"
 GRUB_DISABLE_RECOVERY="true"
