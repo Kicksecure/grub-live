@@ -1,8 +1,13 @@
-# grub live initramfs-tools dependencies #
+# grub live boot menu entry #
 
-initramfs-tools version metapackage for grub-live
+Allows booting the system in live mode. Meaning, no persistent modifications
+will be written to the disk. All changes stay in RAM.
 
-See also grub-live package.
+Adds a grub live boot menu entry.
+
+Existing grub boot entries stay unmodified.
+
+No claims are made with regard to anti forensics.
 
 ## How to install `grub-live` using apt-get ##
 
