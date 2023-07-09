@@ -12,6 +12,21 @@ Vcs-Git: https://github.com/Whonix/grub-live.git
 Standards-Version: 4.6.2
 Rules-Requires-Root: no
 
+Package: grub-live
+Provides: grub-live-boot, boot-live
+Architecture: all
+Depends: grub-live-initramfs-tools | grub-live-dracut,
+ ${misc:Depends}
+Description: grub live boot menu entry
+ Allows booting the system in live mode. Meaning, no persistent modifications
+ will be written to the disk. All changes stay in RAM.
+ .
+ Adds a grub live boot menu entry.
+ .
+ Existing grub boot entries stay unmodified.
+ .
+ No claims are made with regard to anti forensics.
+
 Package: grub-live-initramfs-tools
 Provides: grub-live-boot, boot-live
 Architecture: all
@@ -34,18 +49,3 @@ Description: grub live dracut dependencies
  Dracut version metapackage for grub-live.
  .
  See also the package grub-live.
-
-Package: grub-live
-Provides: grub-live-boot, boot-live
-Architecture: all
-Depends: grub-live-initramfs-tools | grub-live-dracut,
- ${misc:Depends}
-Description: grub live boot menu entry
- Allows booting the system in live mode. Meaning, no persistent modifications
- will be written to the disk. All changes stay in RAM.
- .
- Adds a grub live boot menu entry.
- .
- Existing grub boot entries stay unmodified.
- .
- No claims are made with regard to anti forensics.
