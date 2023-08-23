@@ -30,8 +30,7 @@ Description: grub live boot menu entry
 Package: grub-live-initramfs-tools
 Provides: grub-live-boot, boot-live
 Architecture: all
-Depends: initramfs-tools,
- live-boot,
+Depends: live-boot,
  live-tools,
  ${misc:Depends}
 Description: grub live initramfs-tools dependencies
