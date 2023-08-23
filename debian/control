@@ -32,7 +32,6 @@ Provides: grub-live-boot, boot-live
 Architecture: all
 Depends: initramfs-tools,
  live-boot,
- live-boot-initramfs-tools,
  live-tools,
  ${misc:Depends}
 Description: grub live initramfs-tools dependencies
