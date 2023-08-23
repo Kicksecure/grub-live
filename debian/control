@@ -30,9 +30,7 @@ Description: grub live boot menu entry
 Package: grub-live-initramfs-tools
 Provides: grub-live-boot, boot-live
 Architecture: all
-Depends: live-boot,
- live-tools,
- ${misc:Depends}
+Depends: live-boot, live-tools, ${misc:Depends}
 Description: grub live initramfs-tools dependencies
  initramfs-tools version metapackage for grub-live
  .
@@ -41,8 +39,7 @@ Description: grub live initramfs-tools dependencies
 Package: grub-live-dracut
 Provides: grub-live-boot, boot-live
 Architecture: all
-Depends: dracut,
- ${misc:Depends}
+Depends: dracut, ${misc:Depends}
 Description: grub live dracut dependencies
  Dracut version metapackage for grub-live.
  .
