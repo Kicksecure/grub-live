@@ -1,3 +1,33 @@
+commit aa6a49f2ee9a7f3a759daf07a1b4186fe01842bd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 23 07:52:45 2023 -0400
+
+    refactoring
+
+commit accc34c73fd3297329d3e8ed13751cf587e4ce76
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 23 07:51:02 2023 -0400
+
+    refactoring
+
+commit 18d7718705ce849408e631b0a8e2945de7085688
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 23 07:49:36 2023 -0400
+
+    drop dependency on `initramfs-tools` because `live-tools` already `Depends:` on it
+
+commit 8da0c55e9ffdbb12e544913b8399146d48a8beec
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 23 07:47:58 2023 -0400
+
+    drop dependency on `live-boot-initramfs-tools` because `live-boot` already `Depends:` on it
+
+commit e5dd60db0c79168c003d4f72e63da381def540c5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Jul 17 11:34:22 2023 -0400
+
+    bumped changelog version
+
 commit 67025ba44378bc3cd9c9a758a5bf96e18e1bcc7c
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Jul 17 11:17:54 2023 -0400
