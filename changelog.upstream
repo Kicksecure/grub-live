@@ -1,3 +1,15 @@
+commit b933daf0e9e85bd709b42ba938a208a5f68b0bd4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 18 09:46:17 2023 -0500
+
+    add a safeguard in case the dracut 90overlay-root module vanishes in the future
+
+commit e57dede2b5ec6bb7ec9b437acb52eaa0da704138
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 20:15:20 2023 +0000
+
+    bumped changelog version
+
 commit 2a09063e96e7e2a60c41fe99a86167a1999a2c89
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Nov 11 13:41:27 2023 -0500
