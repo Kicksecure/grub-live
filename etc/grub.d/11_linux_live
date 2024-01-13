@@ -25,14 +25,14 @@ GRUB_DISTRIBUTOR="LIVE mode USER (For daily activities.)"
 GRUB_DISABLE_RECOVERY="true"
 
 ## Cannot use '&>' because it is a bashism.
-if dpkg-query --show initramfs-tools 1>/dev/null 2>/dev/null ; then
+if [ "$(dpkg-query -W -f='${db:Status-Status}' initramfs-tools)" = "installed" ] ; then
    ## https://forums.whonix.org/t/bullseye-live-boot-needs-grub-disable-linux-uuid-true-parameter-in-etc-grub-d-11-linux-live/9066
    ## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=994138
    ## https://askubuntu.com/a/283320
    GRUB_DISABLE_LINUX_UUID="true"
 fi
 
-if dpkg-query --show dracut 1>/dev/null 2>/dev/null ; then
+if [ "$(dpkg-query -W -f='${db:Status-Status}' dracut)" = "installed" ] ; then
    if ! test -x /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh ; then
       echo "\
 grub-live $0: ERROR: It has been detected that this system is using dracut but but file /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh is not executable. This means that no live mode boot menu entry will be added.
