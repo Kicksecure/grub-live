@@ -1,3 +1,27 @@
+commit ea9f503fb071287e16203bd835637490faac74a4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 12 23:40:30 2024 -0500
+
+    check if a supported initrd generator is installed
+    
+    before adding a live mode boot menu entry
+
+commit b1f915040551e5ee2ff33eb60a740d3de8df3dc6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 12 23:36:08 2024 -0500
+
+    fix detection if initramfs-tools is installed
+    
+    https://forums.kicksecure.com/t/updating-kicksecure-to-17-1-1-5-breaks-grub-live/358
+    
+    Thanks to kivk for the bug report!
+
+commit c99761589f2d00e2bd8ca7e78a5441baf191847e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 18 14:47:10 2023 +0000
+
+    bumped changelog version
+
 commit b933daf0e9e85bd709b42ba938a208a5f68b0bd4
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Dec 18 09:46:17 2023 -0500
