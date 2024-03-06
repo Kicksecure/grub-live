@@ -1,3 +1,21 @@
+commit 369c2f1b0375afb9ccfc39913fef8d89499ec8ce
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 6 00:45:38 2024 -0500
+
+    debugging
+
+commit 90ce10b9d3f33f307ca7c9cc0ce229d23bb94c1e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 6 00:42:59 2024 -0500
+
+    fix, hide stderr output of dpkg-query
+
+commit aab909fde3440bbc0e90545d8bc36cfbcfd83923
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jan 13 04:46:24 2024 +0000
+
+    bumped changelog version
+
 commit ea9f503fb071287e16203bd835637490faac74a4
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jan 12 23:40:30 2024 -0500
