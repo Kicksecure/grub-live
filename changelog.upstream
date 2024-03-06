@@ -1,3 +1,23 @@
+commit 595d14e5df7c1e348d5199ff21effe43676211ec
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 6 03:18:07 2024 -0500
+
+    fix initramfs-tools vs dracut package detection
+    
+    https://forums.kicksecure.com/t/updating-kicksecure-to-17-1-1-5-breaks-grub-live/358
+
+commit 42b89f3342012b1e0443ec8e36685369830b265e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 6 01:26:47 2024 -0500
+
+    use long options
+
+commit e79c6a035823afa0c16eb291bdfeaa8d9afe1c82
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Mar 6 05:48:00 2024 +0000
+
+    bumped changelog version
+
 commit 369c2f1b0375afb9ccfc39913fef8d89499ec8ce
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Mar 6 00:45:38 2024 -0500
