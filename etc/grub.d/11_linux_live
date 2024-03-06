@@ -3,8 +3,8 @@
 ## Copyright (C) 2019 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+set -x
 set -e
-
 set -o allexport
 
 GRUB_DEVICE="/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
@@ -26,11 +26,13 @@ GRUB_DISABLE_RECOVERY="true"
 
 ## Cannot use '&>' because it is a bashism.
 if [ "$(dpkg-query -W -f='${db:Status-Status}' initramfs-tools 2>/dev/null)" = "installed" ] ; then
+   true "grub-live $0: INFO: initramfs-tools detected."
    ## https://forums.whonix.org/t/bullseye-live-boot-needs-grub-disable-linux-uuid-true-parameter-in-etc-grub-d-11-linux-live/9066
    ## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=994138
    ## https://askubuntu.com/a/283320
    GRUB_DISABLE_LINUX_UUID="true"
 elif [ "$(dpkg-query -W -f='${db:Status-Status}' dracut 2>/dev/null)" = "installed" ] ; then
+   true "grub-live $0: INFO: dracut detected."
    if ! test -x /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh ; then
       echo "\
 grub-live $0: ERROR: It has been detected that this system is using dracut but but file /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh is not executable. This means that no live mode boot menu entry will be added.
