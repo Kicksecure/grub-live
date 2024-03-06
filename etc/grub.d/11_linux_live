@@ -4,6 +4,9 @@
 ## See the file COPYING for copying conditions.
 
 set -x
+
+true "grub-live $0: START"
+
 set -e
 set -o allexport
 
@@ -56,3 +59,5 @@ fi
 if test -x /etc/grub.d/10_linux ; then
 	/etc/grub.d/10_linux
 fi
+
+true "grub-live $0: END"
