@@ -1,3 +1,33 @@
+commit d9989f8bf702d41fe4c70860afea5993d4a82739
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 13 07:01:49 2024 -0400
+
+    lower debugging
+
+commit 314b186cb2fa73bd64eb1c31301e671eb1ff1ddb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 13 07:00:40 2024 -0400
+
+    lower debugging
+
+commit 12380cf9c1d1f263a3de9bd342e2e865603b71bd
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 13 06:54:52 2024 -0400
+
+    debugging
+
+commit 8e1daeee29c90a7bd2ed199dc5f2954de1c44f31
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 13 06:53:16 2024 -0400
+
+    fix detection of initramfs-tools versus dracut
+
+commit 73c4fec22a23a3c11e85825e52426f93fb79eef5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 13 09:41:35 2024 +0000
+
+    bumped changelog version
+
 commit 78f8f6f0e270172fffcb35d67aa212015633916c
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Apr 13 04:45:01 2024 -0400
