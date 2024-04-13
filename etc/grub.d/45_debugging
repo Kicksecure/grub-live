@@ -15,6 +15,11 @@ output() {
    echo "$@" >&2
 }
 
+## Do this only in chroot (during the build process).
+if ! ischroot --default-false >/dev/null 2>&1 ; then
+   exit 0
+fi
+
 output "grub-live $0: information START"
 
 files_exists_test() {
