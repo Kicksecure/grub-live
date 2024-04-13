@@ -1,0 +1,41 @@
+#!/bin/sh
+
+## Copyright (C) 2019 - 2023 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Attempting to debug why during the build process /boot/grub/grub.cfg
+## sometimes contains root=/dev/mapper because this breaks the boot process.
+
+set -e
+
+output() {
+   ## Write to stdout to add this to grub.cfg.
+   echo "## $@"
+   ## Write to stderr so it is shown in console and not added to the grub config file.
+   echo "$@" >&2
+}
+
+output "grub-live $0: information START"
+
+files_exists_test() {
+   if test -e "$1" ; then
+      output "file '$1' exists: yes"
+   else
+      output "file '$1' exists: no"
+   fi
+}
+
+output "GRUB_DISABLE_LINUX_UUID: '$GRUB_DISABLE_LINUX_UUID'"
+output "GRUB_DISABLE_LINUX_PARTUUID: '$GRUB_DISABLE_LINUX_PARTUUID'"
+
+output "GRUB_DEVICE: '$GRUB_DEVICE'"
+output "GRUB_DEVICE_UUID: '$GRUB_DEVICE_UUID'"
+output "GRUB_DEVICE_PARTUUID: '$GRUB_DEVICE_PARTUUID'"
+output "GRUB_DEVICE_BOOT: '$GRUB_DEVICE_BOOT'"
+output "GRUB_DEVICE_BOOT_UUID: '$GRUB_DEVICE_BOOT_UUID'"
+
+files_exists_test "/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
+files_exists_test "/dev/disk/by-partuuid/${GRUB_DEVICE_PARTUUID}"
+files_exists_test "${GRUB_DEVICE}"
+
+output "grub-live $0: information END"
