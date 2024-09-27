@@ -24,13 +24,25 @@ unset GRUB_DEVICE_UUID
 ## initramfs support
 GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX boot=live plainroot union=overlay ip=frommedia noeject nopersistence"
 
-## dracut support
+#### {{ dracut support
+
 ## https://www.kicksecure.com/wiki/Grub-live#Developer_Information
-##
-## using Debian forked upstream module 90overlay-root (tested)
+
+## using Debian forked upstream module 90overlay-root
+## works on Debian bookworm
+## TODO: disable this on Debian trixie
 GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl"
-## using dracut upstream module 90overlayfs (untested)
-#GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.overlayfs=1 rd.live.overlay.readonly=1"
+
+## using dracut upstream module 90overlayfs
+## TODO: use this on Debian trixie
+## NOTE: overlayfs module needed
+#GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.overlayfs=1 "
+
+## Unnecessary! It's for systems where you have an immutable base filesystem and a persistent overlay,
+## and you want to make the overlay read-only, putting another overlay on top of it.
+#GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.readonly=1 "
+
+#### }}
 
 GRUB_DISTRIBUTOR="LIVE mode USER (For daily activities.)"
 GRUB_DISABLE_RECOVERY="true"
