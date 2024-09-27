@@ -1,3 +1,21 @@
+commit 48a8f6853efcb28a74def5561644f0e35e3c0c8f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 26 22:57:29 2024 -0400
+
+    add comments for port to overlayfs in time for Debian trixie
+    
+    Thanks to @ArrayBolt3 for the investigation!
+    
+    https://www.kicksecure.com/wiki/Dev/todo#grub-live_with_90overlayfs
+    
+    https://www.kicksecure.com/wiki/Progress_Reports#Investigate_using_dracut's_upstream_overlayfs_feature
+
+commit 2257bf7ee9544bacc7213595cd129e132ec31511
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Apr 13 11:02:07 2024 +0000
+
+    bumped changelog version
+
 commit d9989f8bf702d41fe4c70860afea5993d4a82739
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Apr 13 07:01:49 2024 -0400
