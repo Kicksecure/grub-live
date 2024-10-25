@@ -1,3 +1,21 @@
+commit dfd18c4a1a35d4e39ff7a42dd2245cfab74ab19e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 25 11:32:25 2024 -0400
+
+    avoid unnecessary kernel parameters: set dracut specific kernel parameters only when dracut is detected
+
+commit ee9b55c954eb057bd369f30cfa2abc5f870125dc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 25 11:30:56 2024 -0400
+
+    avoid unnecessary kernel parameters: set initramfs-tools specific kernel parameters only when initramfs-tools is detected
+
+commit a53a3e75aa30e4c620068944ade6518c832f18a0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 27 03:07:20 2024 +0000
+
+    bumped changelog version
+
 commit 48a8f6853efcb28a74def5561644f0e35e3c0c8f
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Sep 26 22:57:29 2024 -0400
