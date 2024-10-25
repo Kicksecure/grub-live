@@ -21,9 +21,6 @@ pkg_installed() {
 GRUB_DEVICE="/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
 unset GRUB_DEVICE_UUID
 
-## initramfs support
-GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX boot=live plainroot union=overlay ip=frommedia noeject nopersistence"
-
 #### {{ dracut support
 
 ## https://www.kicksecure.com/wiki/Grub-live#Developer_Information
@@ -53,6 +50,8 @@ if pkg_installed initramfs-tools ; then
    ## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=994138
    ## https://askubuntu.com/a/283320
    GRUB_DISABLE_LINUX_UUID="true"
+
+   GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX boot=live plainroot union=overlay ip=frommedia noeject nopersistence"
 elif pkg_installed dracut ; then
    true "grub-live $0: INFO: dracut detected."
    if ! test -x /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh ; then
