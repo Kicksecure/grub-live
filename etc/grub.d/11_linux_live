@@ -21,26 +21,6 @@ pkg_installed() {
 GRUB_DEVICE="/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
 unset GRUB_DEVICE_UUID
 
-#### {{ dracut support
-
-## https://www.kicksecure.com/wiki/Grub-live#Developer_Information
-
-## using Debian forked upstream module 90overlay-root
-## works on Debian bookworm
-## TODO: disable this on Debian trixie
-GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl"
-
-## using dracut upstream module 90overlayfs
-## TODO: use this on Debian trixie
-## NOTE: overlayfs module needed
-#GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.overlayfs=1 "
-
-## Unnecessary! It's for systems where you have an immutable base filesystem and a persistent overlay,
-## and you want to make the overlay read-only, putting another overlay on top of it.
-#GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.readonly=1 "
-
-#### }}
-
 GRUB_DISTRIBUTOR="LIVE mode USER (For daily activities.)"
 GRUB_DISABLE_RECOVERY="true"
 
@@ -60,6 +40,22 @@ grub-live $0: ERROR: It has been detected that this system is using dracut but b
 " >&2
       exit 0
    fi
+
+   ## https://www.kicksecure.com/wiki/Grub-live#Developer_Information
+
+   ## using Debian forked upstream module 90overlay-root
+   ## works on Debian bookworm
+   ## TODO: disable this on Debian trixie
+   GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl"
+
+   ## using dracut upstream module 90overlayfs
+   ## TODO: use this on Debian trixie
+   ## NOTE: overlayfs module needed
+   #GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.overlayfs=1 "
+
+   ## Unnecessary! It's for systems where you have an immutable base filesystem and a persistent overlay,
+   ## and you want to make the overlay read-only, putting another overlay on top of it.
+   #GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.readonly=1 "
 else
    echo "\
 grub-live $0: ERROR: Neither initramfs-tools nor dracut is installed. Support for other initrd generators is not implemented. This means that no live mode boot menu entry will be added.
