@@ -12,7 +12,7 @@ set -o allexport
 
 pkg_installed() {
    ## Cannot use '&>' because it is a bashism.
-   if dpkg-query --show --showformat='${db:Status-Status}\n' "$1" 2>/dev/null | grep --quiet --fixed-strings -e 'installed' -e 'pending' ; then
+   if [ "$(dpkg-query --show --showformat='${Status}\n' "$1" 2>/dev/null)" = 'install ok installed' ]; then
       return 0
    fi
    return 1
