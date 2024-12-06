@@ -1,3 +1,27 @@
+commit 44484829574905afa6e7a4b0bc6953dce7c8e8f7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 6 08:28:55 2024 -0500
+
+    output
+
+commit ee101e0acbdaf8376aedab2a41c38cc97ed425a0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 6 08:27:35 2024 -0500
+
+    output
+
+commit dc4d0e8b43e84b2269cfc7210328003cd4f37108
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 6 08:26:58 2024 -0500
+
+    fix dracut vs initramfs-tools package installation check
+
+commit 38d7407949f6cb6ea622f75a1b5258364d751f87
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 6 11:25:31 2024 +0000
+
+    bumped changelog version
+
 commit 5aae93cced7acc8574e5a1565e6fa1d4d45f32ae
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Dec 6 06:25:11 2024 -0500
