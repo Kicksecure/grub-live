@@ -83,4 +83,4 @@ if test -x /etc/grub.d/10_linux ; then
 	/etc/grub.d/10_linux
 fi
 
-true "grub-live $0: END"
+true "grub-live $0: OK: END"
