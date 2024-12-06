@@ -1,3 +1,33 @@
+commit 5aae93cced7acc8574e5a1565e6fa1d4d45f32ae
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 6 06:25:11 2024 -0500
+
+    enable verbose output
+
+commit 1cde521f646e5e0c8ced7f728dc3b9c5b07948c5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 6 06:24:38 2024 -0500
+
+    fix dracut vs initramfs-tools package installation check
+
+commit 772e3165f651127e0f7fd3fdec6e38cae93654b6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 6 06:14:01 2024 -0500
+
+    comment
+
+commit 7d2364573473215bbf7d0022dc2d94e534a8f826
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 6 06:12:42 2024 -0500
+
+    refactoring
+
+commit daa8572c266915d31d31bbea30c901fd939d7fe0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 4 22:24:28 2024 +0000
+
+    bumped changelog version
+
 commit 31a89e28aa8d4031e8b2af636ee4e4926325064f
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Dec 4 17:20:00 2024 -0500
