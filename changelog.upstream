@@ -1,3 +1,15 @@
+commit 184f0847de1d65590a20441b445faf02347c5181
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Dec 8 06:55:18 2024 -0500
+
+    `grub-live-initramfs-tools`, `grub-live-dracut`: add `Depends: grub-live`
+
+commit 769c78c2e3bdd8080429db175eb5cf1ec66f63b8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 6 13:36:53 2024 +0000
+
+    bumped changelog version
+
 commit 9cc9017af3bfd6a2bda3c9db417ba14e93fcbbb0
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Dec 6 08:36:38 2024 -0500
