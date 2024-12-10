@@ -1,3 +1,15 @@
+commit 188e936b57fa9b63275378035a4681c5a82d7298
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 10 13:13:09 2024 -0500
+
+    refuse adding boot menu live boot menu entry if grub-live package isn't installed
+
+commit 3f6c6407594138fdc8e025c06aa2500ae70efa5c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Dec 8 12:04:31 2024 +0000
+
+    bumped changelog version
+
 commit 184f0847de1d65590a20441b445faf02347c5181
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Dec 8 06:55:18 2024 -0500
