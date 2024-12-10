@@ -40,6 +40,13 @@ unset GRUB_DEVICE_UUID
 GRUB_DISTRIBUTOR="LIVE mode USER (For daily activities.)"
 GRUB_DISABLE_RECOVERY="true"
 
+if ! pkg_installed grub-live ; then
+   echo "\
+grub-live $0: ERROR: Package grub-live is not installed. File '$0' is probably a leftover. This means that no live mode boot menu entry will be added.
+" >&2
+   exit 0
+fi
+
 if pkg_installed initramfs-tools ; then
    true "grub-live $0: INFO: initramfs-tools detected, ok."
    ## https://forums.whonix.org/t/bullseye-live-boot-needs-grub-disable-linux-uuid-true-parameter-in-etc-grub-d-11-linux-live/9066
