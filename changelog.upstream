@@ -1,3 +1,15 @@
+commit c502a3042e568cbce6b30fe8343da041c5944daf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 10 14:15:36 2024 -0500
+
+    fix duplicate Depends fields
+
+commit da6e66628523c1a51e93f86500bec40020812e91
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 10 19:08:18 2024 +0000
+
+    bumped changelog version
+
 commit 188e936b57fa9b63275378035a4681c5a82d7298
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Dec 10 13:13:09 2024 -0500
