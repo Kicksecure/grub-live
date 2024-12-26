@@ -37,7 +37,7 @@ pkg_installed() {
 GRUB_DEVICE="/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
 unset GRUB_DEVICE_UUID
 
-GRUB_DISTRIBUTOR="LIVE mode USER (For daily activities.)"
+GRUB_DISTRIBUTOR="Kicksecure LIVE mode USER (For daily activities.)"
 GRUB_DISABLE_RECOVERY="true"
 
 if ! pkg_installed grub-live ; then
