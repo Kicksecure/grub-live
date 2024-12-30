@@ -94,8 +94,8 @@ grub-live $0: ERROR: Neither initramfs-tools nor dracut is installed. Support fo
    exit 0
 fi
 
-if test -x /etc/grub.d/10_linux ; then
-	/etc/grub.d/10_linux
+if test -x /etc/grub.d/10_00_linux_dist ; then
+	/etc/grub.d/10_00_linux_dist
 fi
 
 true "grub-live $0: OK: END"
