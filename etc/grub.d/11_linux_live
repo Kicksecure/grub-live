@@ -37,7 +37,15 @@ pkg_installed() {
 GRUB_DEVICE="/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
 unset GRUB_DEVICE_UUID
 
-GRUB_DISTRIBUTOR="LIVE mode USER (For daily activities.)"
+if [ -e '/etc/kicksecure_version' ]; then
+   GRUB_DISTRIBUTOR="Kicksecure LIVE mode USER (For daily activities.)"
+elif pkg_installed 'whonix-ws-network-conf'; then
+   GRUB_DISTRIBUTOR="Whonix-Workstation (TM) LIVE mode USER (For daily activities.)"
+elif pkg_installed 'whonix-gw-network-conf'; then
+   GRUB_DISTRIBUTOR="Whonix-Gateway (TM) LIVE mode USER (For daily activities.)"
+else
+   GRUB_DISTRIBUTOR="LIVE mode USER (For daily activities.)"
+fi
 GRUB_DISABLE_RECOVERY="true"
 
 if ! pkg_installed grub-live ; then
