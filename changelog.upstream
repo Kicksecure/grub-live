@@ -1,3 +1,41 @@
+commit a01d99621c9e890f1a1849dea161baa974e7bb6b
+Merge: 057c151 f5b2794
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 30 05:41:41 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/grub-cfg'
+
+commit f5b27946f0b8641d87141018b5c87b7fa5f29a90
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Dec 30 02:10:26 2024 -0600
+
+    Make live grub boot menu entries better organized
+
+commit 057c1513bfcad09104da40acdcfe5218bef6a377
+Merge: 008afaf 995a5c1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 30 02:17:35 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/sysmaint'
+
+commit 995a5c17e73a83431efbc171a29b1b2fb88f7f64
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Dec 26 14:23:21 2024 -0600
+
+    Fix up boot entry logic
+
+commit fe2bbf6257f2219a75318821ef10537316e772c2
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Dec 26 00:33:35 2024 -0600
+
+    Change live boot entry to fit better with sysmaint mode
+
+commit 008afaf3a87df58bf5027ce644b58158757244d1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 10 19:15:54 2024 +0000
+
+    bumped changelog version
+
 commit c502a3042e568cbce6b30fe8343da041c5944daf
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Dec 10 14:15:36 2024 -0500
