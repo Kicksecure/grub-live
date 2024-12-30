@@ -1,0 +1,5 @@
+## Copyright (C) 2024 - 2024 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+# Renamed to 10_01_linux_live
+rm_conffile /etc/grub.d/11_linux_live
