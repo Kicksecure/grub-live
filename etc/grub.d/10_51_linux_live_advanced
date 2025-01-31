@@ -10,6 +10,8 @@ true "grub-live $0: START"
 set -e
 set -o allexport
 
+## NOTE: Code duplication.
+## Copied from: helper-scripts /usr/libexec/helper-scripts/package_installed_check.bsh
 pkg_installed() {
    local package_name dpkg_query_output
    local requested_action status error_state
