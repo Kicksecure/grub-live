@@ -1,3 +1,16 @@
+commit 2041e2330590f415631745f70b414057916fadd5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Mar 16 06:23:32 2025 -0400
+
+    support both file locations `/etc/grub.d/10_00_linux_dist` and `/etc/grub.d/10_linux`
+    (with and without package `dist-base-files` installed)
+
+commit d16eddf671fe043ccebb7796e76ea41f468215d1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jan 31 19:37:51 2025 +0000
+
+    bumped changelog version
+
 commit 9a234bde52039a741888bdf84858f1be46a3af62
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jan 31 14:34:37 2025 -0500
