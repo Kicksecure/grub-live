@@ -97,7 +97,14 @@ grub-live $0: ERROR: Neither initramfs-tools nor dracut is installed. Support fo
 fi
 
 if test -x /etc/grub.d/10_50_linux_dist_advanced ; then
-	/etc/grub.d/10_50_linux_dist_advanced
+   /etc/grub.d/10_50_linux_dist_advanced
+elif test -x /etc/grub.d/10_linux ; then
+   /etc/grub.d/10_linux
+else
+   echo "\
+grub-live $0: ERROR: Neither file '/etc/grub.d/10_00_linux_dist' (package: 'dist-base-files') nor file '/etc/grub.d/10_linux' (package: 'grub-common') exists. This means that no live mode boot menu entry will be added.
+" >&2
+   exit 0
 fi
 
 true "grub-live $0: OK: END"
