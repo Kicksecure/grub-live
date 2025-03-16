@@ -1,0 +1,103 @@
+#!/bin/sh
+
+## Copyright (C) 2019 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+#set -x
+
+true "grub-live $0: START"
+
+set -e
+set -o allexport
+
+## NOTE: Code duplication.
+## Copied from: helper-scripts /usr/libexec/helper-scripts/package_installed_check.bsh
+pkg_installed() {
+   local package_name dpkg_query_output
+   local requested_action status error_state
+
+   package_name="$1"
+   ## Cannot use '&>' because it is a bashism.
+   dpkg_query_output="$(dpkg-query --show --showformat='${Status}' "$package_name" 2>/dev/null)" || true
+   ## dpkg_query_output Examples:
+   ## install ok half-configured
+   ## install ok installed
+
+   requested_action=$(printf '%s' "$dpkg_query_output" | awk '{print $1}')
+   status=$(printf '%s' "$dpkg_query_output" | awk '{print $2}')
+   error_state=$(printf '%s' "$dpkg_query_output" | awk '{print $3}')
+
+   if [ "$requested_action" = 'install' ]; then
+      true "$0: INFO: $package_name is installed, ok."
+      return 0
+   fi
+
+   true "$0: INFO: $package_name is not installed, ok."
+   return 1
+}
+
+GRUB_DEVICE="/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
+unset GRUB_DEVICE_UUID
+
+if [ -e '/etc/kicksecure_version' ]; then
+   GRUB_DISTRIBUTOR="Kicksecure LIVE mode USER Offline (Networking disabled.)"
+elif pkg_installed 'whonix-ws-network-conf'; then
+   GRUB_DISTRIBUTOR="Whonix-Workstation (TM) LIVE mode USER Offline (Networking disabled.)"
+elif pkg_installed 'whonix-gw-network-conf'; then
+   GRUB_DISTRIBUTOR="Whonix-Gateway (TM) LIVE mode USER Offline (Networking disabled.)"
+else
+   GRUB_DISTRIBUTOR="LIVE mode USER Offline (Networking disabled.)"
+fi
+GRUB_DISABLE_RECOVERY="true"
+
+if ! pkg_installed grub-live ; then
+   echo "\
+grub-live $0: ERROR: Package grub-live is not installed. File '$0' is probably a leftover. This means that no live mode boot menu entry will be added.
+" >&2
+   exit 0
+fi
+
+if pkg_installed initramfs-tools ; then
+   true "grub-live $0: INFO: initramfs-tools detected, ok."
+   ## https://forums.whonix.org/t/bullseye-live-boot-needs-grub-disable-linux-uuid-true-parameter-in-etc-grub-d-11-linux-live/9066
+   ## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=994138
+   ## https://askubuntu.com/a/283320
+   GRUB_DISABLE_LINUX_UUID="true"
+
+   GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX boot=live plainroot union=overlay noeject nopersistence nonet systemd.mask=network.service modprobe.blacklist=e1000,e1000e,r8169,iwlwifi,igb,ixgbe,atl1c,bnx2,tg3,ath9k,ath10k,b43,rt2800pci,rt2800usb,rtl8187,rtl8192ce,rtl8192cu,rtl8821ae,wl,vmxnet3,hv_netvsc,virtio_net,usbnet,cdc_ether"
+elif pkg_installed dracut ; then
+   true "grub-live $0: INFO: dracut detected, ok."
+   if ! test -x /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh ; then
+      echo "\
+grub-live $0: ERROR: It has been detected that this system is using dracut but file /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh is not executable. This means that no live mode boot menu entry will be added.
+" >&2
+      exit 0
+   fi
+
+   ## https://www.kicksecure.com/wiki/Grub-live#Developer_Information
+
+   ## using Debian forked upstream module 90overlay-root
+   ## works on Debian bookworm
+   ## TODO: disable this on Debian trixie
+   GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl"
+
+   ## using dracut upstream module 90overlayfs
+   ## TODO: use this on Debian trixie
+   ## NOTE: overlayfs module needed
+   #GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.overlayfs=1 "
+
+   ## Unnecessary! It's for systems where you have an immutable base filesystem and a persistent overlay,
+   ## and you want to make the overlay read-only, putting another overlay on top of it.
+   #GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.readonly=1 "
+else
+   echo "\
+grub-live $0: ERROR: Neither initramfs-tools nor dracut is installed. Support for other initrd generators is not implemented. This means that no live mode boot menu entry will be added.
+" >&2
+   exit 0
+fi
+
+if test -x /etc/grub.d/10_00_linux_dist ; then
+	/etc/grub.d/10_00_linux_dist
+fi
+
+true "grub-live $0: OK: END"
