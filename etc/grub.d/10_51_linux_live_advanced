@@ -110,8 +110,8 @@ fi
 
 ## LIVE mode SYSMAINT (advanced)
 session_type="LIVE"
-if test -x /etc/grub.d/10_50_linux_dist_advanced ; then
-   /etc/grub.d/10_50_linux_dist_advanced
+if test -x /etc/grub.d/10_52_linux_sysmaint_advanced ; then
+   /etc/grub.d/10_52_linux_sysmaint_advanced
 fi
 
 true "grub-live $0: OK: END"
