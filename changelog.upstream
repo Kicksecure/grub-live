@@ -1,3 +1,15 @@
+commit 8e7d80e8befe9f511938076d833b37e78728f57d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 1 10:26:25 2025 -0400
+
+    live mode rename: (For daily use.) -> (For disposable use.)
+
+commit a089d78f471a3ee16657119c42750aa9bc9cb965
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 1 14:14:50 2025 +0000
+
+    bumped changelog version
+
 commit 9f5feba26c92eaf10f2d9c92b3c9c5a04feb4a65
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Apr 1 10:11:03 2025 -0400
