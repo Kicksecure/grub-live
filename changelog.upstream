@@ -1,3 +1,17 @@
+commit 9e59162e2128a5e799d958af0576d8275e4ab243
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 1 04:46:32 2025 -0400
+
+    implement LIVE mode SYSMAINT
+    
+    https://forums.kicksecure.com/t/live-mode-sysmaint/979
+
+commit 1c9e8831d97e0b2f00a637ba962369711d4cfd98
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Mar 16 10:37:08 2025 +0000
+
+    bumped changelog version
+
 commit 2041e2330590f415631745f70b414057916fadd5
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Mar 16 06:23:32 2025 -0400
