@@ -96,7 +96,7 @@ grub-live $0: ERROR: Neither initramfs-tools nor dracut is installed. Support fo
    exit 0
 fi
 
-## PERSISTENT mode SYSMAINT (non-advanced)
+## LIVE mode USER (non-advanced)
 if test -x /etc/grub.d/10_00_linux_dist ; then
    /etc/grub.d/10_00_linux_dist
 elif test -x /etc/grub.d/10_linux ; then
