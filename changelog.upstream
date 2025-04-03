@@ -1,3 +1,22 @@
+commit 85e47b74ceac114a2be719771dc1ab00b95a621b
+Merge: f93b121 4124326
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 3 12:59:15 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/live-sysmaint'
+
+commit 4124326f96e654d63226d7047fd84a788c21d84e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Apr 2 17:47:33 2025 -0500
+
+    Avoid ending up with GRUB_DEVICE being set to an invalid path
+
+commit f93b121ad0cbf7a5d782e1e9cf6cad48de1927a4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 2 16:11:48 2025 +0000
+
+    bumped changelog version
+
 commit cec34ebf3adcba98eba0635f7b7c034b8ff03624
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Apr 2 12:09:04 2025 -0400
