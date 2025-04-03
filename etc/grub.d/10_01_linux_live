@@ -36,8 +36,10 @@ pkg_installed() {
    return 1
 }
 
-GRUB_DEVICE="/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
-unset GRUB_DEVICE_UUID
+if [ -n "${GRUB_DEVICE_UUID}" ]; then
+  GRUB_DEVICE="/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
+  unset GRUB_DEVICE_UUID
+fi
 
 grub_distributor_appendix="- LIVE Mode - USER Session (For disposable use.)"
 if [ -e '/etc/kicksecure_version' ]; then
