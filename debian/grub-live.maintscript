@@ -1,5 +1,11 @@
 ## Copyright (C) 2024 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-# Renamed to 10_01_linux_live
+# Renamed to /etc/grub.d/10_01_linux_live
 rm_conffile /etc/grub.d/11_linux_live
+
+# Renamed to /etc/grub.d/10_20_linux_live
+rm_conffile /etc/grub.d/10_01_linux_live
+
+# Renamed to /etc/grub.d/10_60_linux_live_advanced
+rm_conffile /etc/grub.d/10_51_linux_live_advanced
