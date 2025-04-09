@@ -1,3 +1,22 @@
+commit 4b42f6be4c4e16b330bbd5c83203d3fa79dbf26b
+Merge: a2a9280 e26608b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 9 11:05:17 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/initramfs-switch-fix'
+
+commit e26608b677f592b188319d00e6d0891e830c045d
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Apr 8 21:13:11 2025 -0500
+
+    Ensure update-grub is called when switching initramfs generators
+
+commit a2a9280e70a5f6f7a264e2a0fee09f3284af02a7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 3 17:00:57 2025 +0000
+
+    bumped changelog version
+
 commit 85e47b74ceac114a2be719771dc1ab00b95a621b
 Merge: f93b121 4124326
 Author: Patrick Schleizer <adrelanos@whonix.org>
