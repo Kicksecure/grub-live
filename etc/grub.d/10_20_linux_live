@@ -113,7 +113,7 @@ fi
 
 ## LIVE Mode - SYSMAINT Session (non-advanced)
 session_type="LIVE"
-session_detail="(For maintenance testing.)"
+session_detail="| For maintenance testing"
 if test -x /etc/grub.d/10_10_linux_sysmaint ; then
    /etc/grub.d/10_10_linux_sysmaint
 fi
