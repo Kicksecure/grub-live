@@ -41,15 +41,15 @@ if [ -n "${GRUB_DEVICE_UUID}" ]; then
   unset GRUB_DEVICE_UUID
 fi
 
-grub_distributor_appendix="- LIVE Mode - USER Session (For disposable use.)"
+grub_distributor_appendix="LIVE Mode - USER Session (For disposable use.)"
 if [ -e '/etc/kicksecure_version' ]; then
-   GRUB_DISTRIBUTOR="Kicksecure $grub_distributor_appendix"
+   GRUB_DISTRIBUTOR="$grub_distributor_appendix"
 elif pkg_installed 'whonix-ws-network-conf'; then
-   GRUB_DISTRIBUTOR="Whonix-Workstation $grub_distributor_appendix"
+   GRUB_DISTRIBUTOR="$grub_distributor_appendix"
 elif pkg_installed 'whonix-gw-network-conf'; then
-   GRUB_DISTRIBUTOR="Whonix-Gateway $grub_distributor_appendix"
+   GRUB_DISTRIBUTOR="$grub_distributor_appendix"
 else
-   GRUB_DISTRIBUTOR="derivative $grub_distributor_appendix"
+   GRUB_DISTRIBUTOR="$grub_distributor_appendix"
 fi
 GRUB_DISABLE_RECOVERY="true"
 
