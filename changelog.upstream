@@ -1,3 +1,15 @@
+commit 2bf3c0bf4054711fe92ecee3288da18e8739275d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 25 04:03:27 2025 -0400
+
+    simplify boot menu names
+
+commit 45c16b49baa1280eb836e5e48c757f5cc4770de7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 9 16:14:59 2025 +0000
+
+    bumped changelog version
+
 commit a96a8db611e4e1a1a3819f5477dac1419387901a
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Apr 9 12:14:37 2025 -0400
