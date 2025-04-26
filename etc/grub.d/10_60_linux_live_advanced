@@ -41,7 +41,7 @@ if [ -n "${GRUB_DEVICE_UUID}" ]; then
   unset GRUB_DEVICE_UUID
 fi
 
-grub_distributor_appendix="LIVE Mode - USER Session | For disposable use"
+grub_distributor_appendix="LIVE Mode | USER Session | For disposable use"
 if [ -e '/etc/kicksecure_version' ]; then
    GRUB_DISTRIBUTOR="$grub_distributor_appendix"
 elif pkg_installed 'whonix-ws-network-conf'; then
