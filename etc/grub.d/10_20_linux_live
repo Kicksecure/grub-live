@@ -41,7 +41,7 @@ if [ -n "${GRUB_DEVICE_UUID}" ]; then
   unset GRUB_DEVICE_UUID
 fi
 
-grub_distributor_appendix="LIVE Mode | USER Session | For disposable use"
+grub_distributor_appendix="LIVE Mode | USER Session | disposable use"
 if [ -e '/etc/kicksecure_version' ]; then
    GRUB_DISTRIBUTOR="$grub_distributor_appendix"
 elif pkg_installed 'whonix-ws-network-conf'; then
@@ -99,7 +99,7 @@ grub-live $0: ERROR: Neither initramfs-tools nor dracut is installed. Support fo
    exit 0
 fi
 
-## LIVE Mode - USER Session (non-advanced)
+## LIVE Mode | USER Session (non-advanced)
 if test -x /etc/grub.d/10_00_linux_dist ; then
    /etc/grub.d/10_00_linux_dist
 elif test -x /etc/grub.d/10_linux ; then
@@ -111,9 +111,9 @@ grub-live $0: ERROR: Neither file '/etc/grub.d/10_00_linux_dist' (package: 'dist
    exit 0
 fi
 
-## LIVE Mode - SYSMAINT Session (non-advanced)
+## LIVE Mode | SYSMAINT Session (non-advanced)
 session_type="LIVE"
-session_detail="| For maintenance testing"
+session_detail="maintenance testing"
 if test -x /etc/grub.d/10_10_linux_sysmaint ; then
    /etc/grub.d/10_10_linux_sysmaint
 fi
