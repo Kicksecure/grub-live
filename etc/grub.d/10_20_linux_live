@@ -112,7 +112,7 @@ grub-live $0: ERROR: Neither file '/etc/grub.d/10_00_linux_dist' (package: 'dist
 fi
 
 ## LIVE Mode | SYSMAINT Session (non-advanced)
-session_type="LIVE"
+persistence_type="LIVE"
 session_detail="maintenance testing"
 if test -x /etc/grub.d/10_10_linux_sysmaint ; then
    /etc/grub.d/10_10_linux_sysmaint
