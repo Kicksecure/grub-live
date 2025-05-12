@@ -1,3 +1,23 @@
+commit 20551df85a0c22781bd12a575b8ac3a75a5fb225
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 05:55:36 2025 -0400
+
+    add debian install file (generated using "genmkfile debinstfile")
+
+commit 64dd2f13be15fc9866471455f8a0af558821274b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 05:53:59 2025 -0400
+
+    Disable systemd-repart in live-mode.
+    (Using file `/usr/lib/systemd/system/systemd-repart.service.d/30_grub-live.conf`.)
+    This is to avoid error messages by repart because disk is non-writeable in live mode.
+
+commit a93ff1355bc473e945156dc3e0e3ba29e55854a1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 27 20:19:11 2025 +0000
+
+    bumped changelog version
+
 commit 098987cb213f4ccafb65d5de48c4633fc9f65e04
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Apr 27 13:05:58 2025 -0400
