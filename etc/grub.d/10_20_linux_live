@@ -60,6 +60,9 @@ grub-live $0: ERROR: Package grub-live is not installed. File '$0' is probably a
    exit 0
 fi
 
+## NOTE: If changing kernel parameters, please also update at the same time:
+##       /usr/lib/systemd/system/systemd-repart.service.d/30_grub-live.conf
+
 if pkg_installed initramfs-tools ; then
    true "grub-live $0: INFO: initramfs-tools detected, ok."
    ## https://forums.whonix.org/t/bullseye-live-boot-needs-grub-disable-linux-uuid-true-parameter-in-etc-grub-d-11-linux-live/9066
