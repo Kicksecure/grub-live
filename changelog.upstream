@@ -1,3 +1,15 @@
+commit 962e65967be5965fbc6e19474c85ccc2bbe3e0f0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 09:39:59 2025 -0400
+
+    fix: include `/usr/lib/systemd/system/systemd-repart.service.d/30_grub-live.conf` inside dracut initramfs
+
+commit 725ae81f95644f4a2ed0ecbfc8e07314b44fbb57
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon May 12 14:03:15 2025 +0000
+
+    bumped changelog version
+
 commit a779bf5e27bd1ec75bd8467fbd41e8ddc24b1230
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon May 12 10:02:36 2025 -0400
