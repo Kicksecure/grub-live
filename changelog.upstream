@@ -1,3 +1,15 @@
+commit 5201f4e196cb1a28076699273b36dfd334e49365
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 11:37:34 2025 -0400
+
+    add trigger to re-generate dracut initramfs
+
+commit 7d254e47b0e47e92f108c08623bab9b490c08c3d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 13:42:24 2025 +0000
+
+    bumped changelog version
+
 commit 39a4f27e64ede70b467509d40f9c833ad72d5809
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue May 13 09:42:07 2025 -0400
