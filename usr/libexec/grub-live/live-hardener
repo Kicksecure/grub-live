@@ -1,0 +1,192 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+overlay_tmpfs_repo='/var/lib/grub-live/overlay_tmpfs_repo'
+target_overlay_mount_list=()
+fs_type_whitelist=(
+  'nfs'
+  'proc'
+  'tmpfs'
+  'autofs'
+  'binfmt_misc'
+  'cgroup2'
+  'configfs'
+  'devpts'
+  'devtmpfs'
+  'fusectl'
+  'hugetlbfs'
+  'mqueue'
+  'ramfs'
+  'securityfs'
+  'sysfs'
+  'tracefs'
+)
+
+check_kernel_params() {
+  ## We can't use systemd's ConditionKernelCommandLine here, since we want to
+  ## run if any of several kernel parameters are set.
+  ## ConditionKernelCommandLine only allows us to run if ALL listed kernel
+  ## parameters are specified, which isn't expected to happen ever since some
+  ## of the parameters are specific to Dracut and others are specific to
+  ## initramfs-tools.
+
+  local kernel_cmdline kernel_param
+
+  kernel_cmdline="$(cat /proc/cmdline)"
+  # shellcheck disable=SC2068
+  for kernel_param in ${kernel_cmdline[@]}; do
+    if [ "${kernel_param}" = 'rootovl' ] \
+      || [ "${kernel_param}" = 'rd.live.overlay.overlayfs=1' ] \
+      || [ "${kernel_param}" = 'boot=live' ] \
+      || [ "${kernel_param}" = 'nopersistence' ]; then
+      return
+    fi
+  done
+
+  true "System has not been booted in live mode, exiting."
+  exit
+}
+
+get_mount_list_to_overlay() {
+  local fstab_contents lsblk_output proc_mount_contents fstab_path_list \
+    fstab_type_list lsblk_path_list lsblk_removable_list \
+    proc_mount_path_list proc_mount_attr_list lsblk_prev_rm_bit \
+    fstab_idx fstab_path fstab_type lsblk_idx lsblk_path lsblk_removable \
+    proc_mount_idx fs_attr_list fs_attr_item is_fs_readonly is_removable \
+    is_fs_whitelisted fs_whitelist_idx
+
+  fstab_contents="$(cat /etc/fstab)"
+  lsblk_output="$(lsblk --output=MOUNTPOINTS,RM)"
+  proc_mount_contents="$(cat /proc/self/mounts)"
+  readarray -t fstab_path_list < <(awk '{ print $2 }' <<< "${fstab_contents}")
+  readarray -t fstab_type_list < <(awk '{ print $3 }' <<< "${fstab_contents}")
+  readarray -t lsblk_path_list < <(awk '{ print $1 }' <<< "${lsblk_output}")
+  readarray -t lsblk_removable_list < <(
+    awk '{ print $2 }' <<< "${lsblk_output}"
+  )
+  readarray -t proc_mount_path_list < <(
+    awk '{ print $2 }' <<< "${proc_mount_contents}"
+  )
+  readarray -t proc_mount_attr_list < <(
+    awk '{ print $4 }' <<< "${proc_mount_contents}"
+  )
+
+  ## lsblk will output sparse data for the removable media bit column, but
+  ## that works against us, so calculate the missing values
+  lsblk_prev_rm_bit=''
+  for (( lsblk_idx = 0; lsblk_idx < ${#lsblk_path_list[@]}; lsblk_idx++ )); do
+    if [ -z "${lsblk_removable_list[lsblk_idx]}" ]; then
+      lsblk_removable_list[lsblk_idx]="${lsblk_prev_rm_bit}"
+    else
+      lsblk_prev_rm_bit="${lsblk_removable_list[lsblk_idx]}"
+    fi
+  done
+
+  for (( fstab_idx = 0; fstab_idx < ${#fstab_path_list[@]}; fstab_idx++ )); do
+    fstab_type="${fstab_type_list[fstab_idx]}"
+    is_fs_whitelisted='false'
+    for (( fs_whitelist_idx = 0; \
+      fs_whitelist_idx < ${#fs_type_whitelist[@]}; fs_whitelist_idx++ )); do
+      if [ "${fs_type_whitelist[fs_whitelist_idx]}" = "${fstab_type}" ]; then
+        is_fs_whitelisted='true'
+        break
+      fi
+    done
+    if [ "${is_fs_whitelisted}" = 'true' ]; then
+      continue
+    fi
+
+    fstab_path="${fstab_path_list[fstab_idx]}"
+    is_removable='false'
+    if [[ "${fstab_path}" =~ ^/media/ ]] \
+      || [[ "${fstab_path}" =~ ^/mnt/ ]] \
+      || [ "${fstab_path}" = '/media' ] \
+      || [ "${fstab_path}" = '/mnt' ]; then
+      for (( lsblk_idx = 0; lsblk_idx < ${#lsblk_path_list[@]}; \
+        lsblk_idx++ )); do
+        lsblk_path="${lsblk_path_list[lsblk_idx]}"
+        if [ "${lsblk_path}" = "${fstab_path}" ]; then
+          lsblk_removable="${lsblk_removable_list[lsblk_idx]}"
+          if [ "${lsblk_removable}" = '1' ]; then
+            is_removable='true'
+            break
+          fi
+        fi
+      done
+      if [ "${is_removable}" = 'true' ]; then
+        continue
+      fi
+    fi
+
+    is_fs_readonly='true'
+    for (( proc_mount_idx = 0; proc_mount_idx < ${#proc_mount_path_list[@]}; \
+      proc_mount_idx++ )); do
+      if [ "${proc_mount_path_list[proc_mount_idx]}" = "${fstab_path}" ]; then
+        IFS=',' read -r -a fs_attr_list \
+          <<< "${proc_mount_attr_list[proc_mount_idx]}"
+        for fs_attr_item in "${fs_attr_list[@]}"; do
+          if [ "${fs_attr_item}" = 'rw' ]; then
+            is_fs_readonly='false'
+            break
+          fi
+        done
+        ## We intentionally do NOT break if is_fs_readonly still equals true,
+        ## since a directory may have multiple filesystems mounted to it, one
+        ## overshadowing the others.
+        if [ "${is_fs_readonly}" = 'false' ]; then
+          break
+        fi
+      fi
+    done
+
+    if [ "${is_fs_readonly}" = 'false' ]; then
+      target_overlay_mount_list+=( "${fstab_path}" );
+    fi
+  done
+}
+
+mount_overlays() {
+  local mount_idx target_overlay_mount tmpfs_dir tmpfs_upper_dir \
+    tmpfs_work_dir
+
+  safe-rm -rf -- "${overlay_tmpfs_repo}"
+  mkdir --parents -- "${overlay_tmpfs_repo}"
+
+  for (( mount_idx = 0; mount_idx < ${#target_overlay_mount_list[@]}; \
+    mount_idx++ )); do
+    target_overlay_mount="${target_overlay_mount_list[mount_idx]}"
+    mount -o remount,ro "${target_overlay_mount}" || continue
+
+    tmpfs_dir="${overlay_tmpfs_repo}/${mount_idx}"
+    tmpfs_upper_dir="${tmpfs_dir}/upper"
+    tmpfs_work_dir="${tmpfs_dir}/work"
+    mkdir --parents -- "${tmpfs_dir}"
+    mount -t tmpfs tmpfs "${tmpfs_dir}"
+    mkdir --parents -- "${tmpfs_upper_dir}"
+    mkdir --parents -- "${tmpfs_work_dir}"
+
+    if ! mount -t overlay overlay \
+      -o lowerdir="${target_overlay_mount}" \
+      -o upperdir="${tmpfs_upper_dir}" \
+      -o workdir="${tmpfs_work_dir}" \
+      "${target_overlay_mount}"; then
+      ## Some filesystems don't support being the lower directory of an
+      ## overlayfs (for instance, fat32). With these directories, we simply
+      ## leave them read-only and clean up the directories that would have
+      ## been used to place a writable overlay on them.
+      umount "${tmpfs_dir}"
+      safe-rm -rf -- "${tmpfs_dir}"
+    fi
+  done
+}
+
+check_kernel_params
+get_mount_list_to_overlay
+mount_overlays
