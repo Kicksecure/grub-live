@@ -10,6 +10,8 @@ true "grub-live $0: START"
 set -e
 set -o allexport
 
+make_boot_entry='true'
+
 ## NOTE: Code duplication.
 ## Copied from: helper-scripts /usr/libexec/helper-scripts/package_installed_check.bsh
 pkg_installed() {
