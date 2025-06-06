@@ -1,3 +1,46 @@
+commit 58562acc8531dfde85dcf8b102456202550c0c94
+Merge: 81e1774 84cc53c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jun 6 15:13:36 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/live'
+
+commit 84cc53cb37226339738d57de3146dc70ad640c42
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Jun 5 21:57:06 2025 -0500
+
+    live-hardener: whitelist bpf filesystem
+
+commit b362d5da63602ae4f9c365cb622bc3fb3728efec
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Jun 5 19:53:05 2025 -0500
+
+    live-hardener: only parse /proc/self/mounts, don't rely on /etc/fstab
+
+commit f74a3f9c1569dbbfbe7b9f7c8eb80dba75f599a4
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Jun 5 17:54:15 2025 -0500
+
+    Make compatible with new boot menu scripts
+
+commit 910e58af926fe0119ce83257c47579f94ecf867b
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Jun 3 23:40:14 2025 -0500
+
+    Add live-hardener script for providing live overlays on non-root filesystems
+
+commit 527253264b2315e18df678254fac7d6c5803b851
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Jun 3 19:31:50 2025 -0500
+
+    Suppress automatic mounting of VM shared folders in live mode
+
+commit 81e17745b413bc21aa4bc366868e128eb131c758
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue May 13 17:39:27 2025 +0000
+
+    bumped changelog version
+
 commit a2a043e2b4d8e22989f5d7c121b6237358bef545
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue May 13 13:09:08 2025 -0400
