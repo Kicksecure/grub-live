@@ -55,24 +55,23 @@ check_kernel_params() {
 }
 
 get_mount_list_to_overlay() {
-  local fstab_contents lsblk_output proc_mount_contents fstab_path_list \
-    fstab_type_list lsblk_path_list lsblk_removable_list \
-    proc_mount_path_list proc_mount_attr_list lsblk_prev_rm_bit \
-    fstab_idx fstab_path fstab_type lsblk_idx lsblk_path lsblk_removable \
-    proc_mount_idx fs_attr_list fs_attr_item is_fs_readonly is_removable \
-    is_fs_whitelisted fs_whitelist_idx
+  local lsblk_output proc_mount_contents lsblk_path_list \
+    lsblk_removable_list proc_mount_path_list proc_mount_attr_list \
+    lsblk_prev_rm_bit lsblk_idx lsblk_path lsblk_removable proc_mount_idx \
+    fs_attr_list fs_attr_item is_fs_readonly is_removable is_fs_whitelisted \
+    fs_whitelist_idx proc_mount_type proc_mount_path proc_mount_type_list
 
-  fstab_contents="$(cat /etc/fstab)"
   lsblk_output="$(lsblk --output=MOUNTPOINTS,RM)"
   proc_mount_contents="$(cat /proc/self/mounts)"
-  readarray -t fstab_path_list < <(awk '{ print $2 }' <<< "${fstab_contents}")
-  readarray -t fstab_type_list < <(awk '{ print $3 }' <<< "${fstab_contents}")
   readarray -t lsblk_path_list < <(awk '{ print $1 }' <<< "${lsblk_output}")
   readarray -t lsblk_removable_list < <(
     awk '{ print $2 }' <<< "${lsblk_output}"
   )
   readarray -t proc_mount_path_list < <(
     awk '{ print $2 }' <<< "${proc_mount_contents}"
+  )
+  readarray -t proc_mount_type_list < <(
+    awk '{ print $3 }' <<< "${proc_mount_contents}"
   )
   readarray -t proc_mount_attr_list < <(
     awk '{ print $4 }' <<< "${proc_mount_contents}"
@@ -89,13 +88,14 @@ get_mount_list_to_overlay() {
     fi
   done
 
-  for (( fstab_idx = 0; fstab_idx < ${#fstab_path_list[@]}; fstab_idx++ )); do
-    fstab_type="${fstab_type_list[fstab_idx]}"
+  for (( proc_mount_idx = 0; proc_mount_idx < ${#proc_mount_path_list[@]};
+    proc_mount_idx++ )); do
+    proc_mount_type="${proc_mount_type_list[proc_mount_idx]}"
     is_fs_whitelisted='false'
     for (( fs_whitelist_idx = 0; \
       fs_whitelist_idx < ${#fs_type_whitelist[@]}; fs_whitelist_idx++ )); do
-      if [ "${fs_type_whitelist[fs_whitelist_idx]}" = "${fstab_type}" ]; then
-        is_fs_whitelisted='true'
+      if [ "${fs_type_whitelist[fs_whitelist_idx]}" = "${proc_mount_type}" ];
+        then is_fs_whitelisted='true'
         break
       fi
     done
@@ -103,16 +103,16 @@ get_mount_list_to_overlay() {
       continue
     fi
 
-    fstab_path="${fstab_path_list[fstab_idx]}"
+    proc_mount_path="${proc_mount_path_list[proc_mount_idx]}"
     is_removable='false'
-    if [[ "${fstab_path}" =~ ^/media/ ]] \
-      || [[ "${fstab_path}" =~ ^/mnt/ ]] \
-      || [ "${fstab_path}" = '/media' ] \
-      || [ "${fstab_path}" = '/mnt' ]; then
+    if [[ "${proc_mount_path}" =~ ^/media/ ]] \
+      || [[ "${proc_mount_path}" =~ ^/mnt/ ]] \
+      || [ "${proc_mount_path}" = '/media' ] \
+      || [ "${proc_mount_path}" = '/mnt' ]; then
       for (( lsblk_idx = 0; lsblk_idx < ${#lsblk_path_list[@]}; \
         lsblk_idx++ )); do
         lsblk_path="${lsblk_path_list[lsblk_idx]}"
-        if [ "${lsblk_path}" = "${fstab_path}" ]; then
+        if [ "${lsblk_path}" = "${proc_mount_path}" ]; then
           lsblk_removable="${lsblk_removable_list[lsblk_idx]}"
           if [ "${lsblk_removable}" = '1' ]; then
             is_removable='true'
@@ -126,28 +126,17 @@ get_mount_list_to_overlay() {
     fi
 
     is_fs_readonly='true'
-    for (( proc_mount_idx = 0; proc_mount_idx < ${#proc_mount_path_list[@]}; \
-      proc_mount_idx++ )); do
-      if [ "${proc_mount_path_list[proc_mount_idx]}" = "${fstab_path}" ]; then
-        IFS=',' read -r -a fs_attr_list \
-          <<< "${proc_mount_attr_list[proc_mount_idx]}"
-        for fs_attr_item in "${fs_attr_list[@]}"; do
-          if [ "${fs_attr_item}" = 'rw' ]; then
-            is_fs_readonly='false'
-            break
-          fi
-        done
-        ## We intentionally do NOT break if is_fs_readonly still equals true,
-        ## since a directory may have multiple filesystems mounted to it, one
-        ## overshadowing the others.
-        if [ "${is_fs_readonly}" = 'false' ]; then
-          break
-        fi
+    IFS=',' read -r -a fs_attr_list \
+      <<< "${proc_mount_attr_list[proc_mount_idx]}"
+    for fs_attr_item in "${fs_attr_list[@]}"; do
+      if [ "${fs_attr_item}" = 'rw' ]; then
+        is_fs_readonly='false'
+        break
       fi
     done
 
     if [ "${is_fs_readonly}" = 'false' ]; then
-      target_overlay_mount_list+=( "${fstab_path}" );
+      target_overlay_mount_list+=( "${proc_mount_path}" );
     fi
   done
 }
