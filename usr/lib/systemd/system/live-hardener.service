@@ -1,0 +1,19 @@
+## Copyright (C) 2019 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+[Unit]
+Description=Remounts auxiliary writable filesystems as read-only and applies a tmpfs overlay on them
+Documentation=https://github.com/Kicksecure/grub-live
+
+DefaultDependencies=no
+Before=sysinit.target
+Requires=local-fs.target
+After=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/libexec/grub-live/live-hardener
+
+[Install]
+WantedBy=sysinit.target
