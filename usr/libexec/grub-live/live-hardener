@@ -40,7 +40,13 @@ check_kernel_params() {
 
   local kernel_cmdline kernel_param
 
-  kernel_cmdline="$(cat /proc/cmdline)"
+  if [ -f '/proc/cmdline' ]; then
+    kernel_cmdline="$(cat -- /proc/cmdline)"
+  elif [ -f '/proc/1/cmdline' ]; then
+    kernel_cmdline="$(cat -- /proc/1/cmdline)"
+  else
+    kernel_cmdline=''
+  fi
   # shellcheck disable=SC2068
   for kernel_param in ${kernel_cmdline}; do
     if [ "${kernel_param}" = 'rootovl' ] \
@@ -152,7 +158,7 @@ mount_overlays() {
   for (( mount_idx = 0; mount_idx < ${#target_overlay_mount_list[@]}; \
     mount_idx++ )); do
     target_overlay_mount="${target_overlay_mount_list[mount_idx]}"
-    mount -o remount,ro "${target_overlay_mount}" || continue
+    mount -o remount,ro -- "${target_overlay_mount}" || continue
 
     tmpfs_dir="${overlay_tmpfs_repo}/${mount_idx}"
     tmpfs_upper_dir="${tmpfs_dir}/upper"
@@ -166,6 +172,7 @@ mount_overlays() {
       -o lowerdir="${target_overlay_mount}" \
       -o upperdir="${tmpfs_upper_dir}" \
       -o workdir="${tmpfs_work_dir}" \
+      -- \
       "${target_overlay_mount}"; then
       ## Some filesystems don't support being the lower directory of an
       ## overlayfs (for instance, fat32). With these directories, we simply
