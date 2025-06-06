@@ -27,6 +27,7 @@ fs_type_whitelist=(
   'securityfs'
   'sysfs'
   'tracefs'
+  'bpf'
 )
 
 check_kernel_params() {
