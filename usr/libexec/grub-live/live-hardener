@@ -42,7 +42,7 @@ check_kernel_params() {
 
   kernel_cmdline="$(cat /proc/cmdline)"
   # shellcheck disable=SC2068
-  for kernel_param in ${kernel_cmdline[@]}; do
+  for kernel_param in ${kernel_cmdline}; do
     if [ "${kernel_param}" = 'rootovl' ] \
       || [ "${kernel_param}" = 'rd.live.overlay.overlayfs=1' ] \
       || [ "${kernel_param}" = 'boot=live' ] \
