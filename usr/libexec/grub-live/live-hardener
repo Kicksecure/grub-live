@@ -3,10 +3,14 @@
 ## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-set -o errexit
-set -o nounset
-set -o errtrace
-set -o pipefail
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  set -o errexit
+  set -o nounset
+  set -o errtrace
+  set -o pipefail
+fi
+
+source /usr/libexec/helper-scripts/wc-test.sh
 
 overlay_tmpfs_repo='/var/lib/grub-live/overlay_tmpfs_repo'
 target_overlay_mount_list=()
@@ -28,7 +32,26 @@ fs_type_whitelist=(
   'sysfs'
   'tracefs'
   'bpf'
+  'portal'
+  'debugfs'
+  'overlay'
 )
+
+if ! [ -v kernel_cmdline ]; then
+  if [ -f '/proc/cmdline' ]; then
+    kernel_cmdline="$(cat -- /proc/cmdline)"
+  elif [ -f '/proc/1/cmdline' ]; then
+    kernel_cmdline="$(cat -- /proc/1/cmdline)"
+  else
+    kernel_cmdline=''
+  fi
+fi
+if ! [ -v proc_mount_contents ]; then
+  proc_mount_contents="$(cat /proc/self/mounts)"
+fi
+if ! [ -v lsblk_output ]; then
+  lsblk_output="$(lsblk --raw --output=MOUNTPOINTS,RM | tail -n+2)"
+fi
 
 check_kernel_params() {
   ## We can't use systemd's ConditionKernelCommandLine here, since we want to
@@ -38,11 +61,10 @@ check_kernel_params() {
   ## of the parameters are specific to Dracut and others are specific to
   ## initramfs-tools.
 
-  local kernel_cmdline kernel_param
+  local kernel_param
 
-  kernel_cmdline="$(cat /proc/cmdline)"
   # shellcheck disable=SC2068
-  for kernel_param in ${kernel_cmdline[@]}; do
+  for kernel_param in ${kernel_cmdline}; do
     if [ "${kernel_param}" = 'rootovl' ] \
       || [ "${kernel_param}" = 'rd.live.overlay.overlayfs=1' ] \
       || [ "${kernel_param}" = 'boot=live' ] \
@@ -56,18 +78,51 @@ check_kernel_params() {
 }
 
 get_mount_list_to_overlay() {
-  local lsblk_output proc_mount_contents lsblk_path_list \
-    lsblk_removable_list proc_mount_path_list proc_mount_attr_list \
-    lsblk_prev_rm_bit lsblk_idx lsblk_path lsblk_removable proc_mount_idx \
+  local lsblk_raw_list lsblk_path_list \
+    lsblk_removable_list lsblk_raw_str lsblk_raw_path_str \
+    lsblk_raw_path_list lsblk_raw_path proc_mount_path_list \
+    proc_mount_attr_list lsblk_idx lsblk_path lsblk_removable proc_mount_idx \
     fs_attr_list fs_attr_item is_fs_readonly is_removable is_fs_whitelisted \
     fs_whitelist_idx proc_mount_type proc_mount_path proc_mount_type_list
 
-  lsblk_output="$(lsblk --output=MOUNTPOINTS,RM)"
-  proc_mount_contents="$(cat /proc/self/mounts)"
-  readarray -t lsblk_path_list < <(awk '{ print $1 }' <<< "${lsblk_output}")
-  readarray -t lsblk_removable_list < <(
-    awk '{ print $2 }' <<< "${lsblk_output}"
-  )
+  if [ -z "${lsblk_output}" ]; then
+    printf "%s\n" "$0: ERROR: empty output from 'lsblk --raw --output=MOUNTPOINTS,RM'!" 1>&2
+    exit 1
+  elif [ -z "${proc_mount_contents}" ]; then
+    printf "%s\n" "$0: ERROR: empty output from 'cat /proc/self/mounts'!" 1>&2
+  fi
+
+  ## lsblk --raw output is a pain to parse unfortunately...
+  readarray -t lsblk_raw_list <<< "${lsblk_output}"
+  if (( ${#lsblk_raw_list[@]} <= 1 )) \
+    || [ -z "${lsblk_raw_list[0]:-}" ]; then
+    printf "%s\n" "$0: ERROR: 'lsblk_raw_list' array is empty!" 1>&2
+    exit 1
+  fi
+  lsblk_path_list=()
+  lsblk_removable_list=()
+  for (( lsblk_idx = 0; lsblk_idx < ${#lsblk_raw_list[@]}; lsblk_idx++ )); do
+    lsblk_raw_str="${lsblk_raw_list[lsblk_idx]}"
+
+    if [ "${lsblk_raw_str:0:1}" = ' ' ]; then
+      ## Current drive has no mountpoint, skip it
+      continue
+    fi
+
+    lsblk_raw_path_str="$(cut -d' ' -f1 <<< "${lsblk_raw_str}")"
+    ## Path field from lsblk contains escaped newlines, so this will convert
+    ## them into real newlines (and fix any other escapes that happen to be
+    ## in the string).
+    printf -v lsblk_raw_path_str "%b" "${lsblk_raw_path_str}"
+    readarray -t lsblk_raw_path_list <<< "${lsblk_raw_path_str}"
+    lsblk_removable="$(cut -d' ' -f2 <<< "${lsblk_raw_str}")"
+
+    for lsblk_raw_path in "${lsblk_raw_path_list[@]}"; do
+      lsblk_path_list+=( "${lsblk_raw_path}" )
+      lsblk_removable_list+=( "${lsblk_removable}" )
+    done
+  done
+
   readarray -t proc_mount_path_list < <(
     awk '{ print $2 }' <<< "${proc_mount_contents}"
   )
@@ -78,16 +133,14 @@ get_mount_list_to_overlay() {
     awk '{ print $4 }' <<< "${proc_mount_contents}"
   )
 
-  ## lsblk will output sparse data for the removable media bit column, but
-  ## that works against us, so calculate the missing values
-  lsblk_prev_rm_bit=''
-  for (( lsblk_idx = 0; lsblk_idx < ${#lsblk_path_list[@]}; lsblk_idx++ )); do
-    if [ -z "${lsblk_removable_list[lsblk_idx]}" ]; then
-      lsblk_removable_list[lsblk_idx]="${lsblk_prev_rm_bit}"
-    else
-      lsblk_prev_rm_bit="${lsblk_removable_list[lsblk_idx]}"
-    fi
-  done
+  if (( ${#lsblk_path_list[@]} <= 1 )) \
+    && [ -z "${lsblk_path_list[0]:-}" ]; then
+    printf "%s\n" "$0: ERROR: 'lsblk_path_list' array is empty!" 1>&2
+    exit 1
+  elif (( ${#proc_mount_path_list[@]} <= 1 )) \
+    && [ -z "${proc_mount_path_list[0]:-}" ]; then
+    printf "%s\n" "$0: ERROR: 'proc_mount_path_list' array is empty!" 1>&2
+  fi
 
   for (( proc_mount_idx = 0; proc_mount_idx < ${#proc_mount_path_list[@]};
     proc_mount_idx++ )); do
@@ -146,13 +199,16 @@ mount_overlays() {
   local mount_idx target_overlay_mount tmpfs_dir tmpfs_upper_dir \
     tmpfs_work_dir
 
+  ## If there are no directories to overlay, skip everything else
+  [ "${#target_overlay_mount_list[@]}" = '0' ] && return
+
   safe-rm -rf -- "${overlay_tmpfs_repo}"
   mkdir --parents -- "${overlay_tmpfs_repo}"
 
   for (( mount_idx = 0; mount_idx < ${#target_overlay_mount_list[@]}; \
     mount_idx++ )); do
     target_overlay_mount="${target_overlay_mount_list[mount_idx]}"
-    mount -o remount,ro "${target_overlay_mount}" || continue
+    mount -o remount,ro -- "${target_overlay_mount}" || continue
 
     tmpfs_dir="${overlay_tmpfs_repo}/${mount_idx}"
     tmpfs_upper_dir="${tmpfs_dir}/upper"
@@ -166,6 +222,7 @@ mount_overlays() {
       -o lowerdir="${target_overlay_mount}" \
       -o upperdir="${tmpfs_upper_dir}" \
       -o workdir="${tmpfs_work_dir}" \
+      -- \
       "${target_overlay_mount}"; then
       ## Some filesystems don't support being the lower directory of an
       ## overlayfs (for instance, fat32). With these directories, we simply
@@ -179,4 +236,8 @@ mount_overlays() {
 
 check_kernel_params
 get_mount_list_to_overlay
-mount_overlays
+if [ "${LIVE_HARDENER_TEST:-}" = 'true' ]; then
+  printf '%s\n' "${target_overlay_mount_list[@]}"
+else
+  mount_overlays
+fi
