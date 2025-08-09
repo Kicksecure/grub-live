@@ -78,7 +78,7 @@ check_kernel_params() {
     fi
   done
 
-  true "System has not been booted in live mode, exiting."
+  printf "%s\n" "$0: INFO: System has not been booted in live mode, exiting, ok."
   exit
 }
 
