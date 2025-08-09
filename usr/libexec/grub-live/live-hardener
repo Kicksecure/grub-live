@@ -219,7 +219,10 @@ mount_overlays() {
   for (( mount_idx = 0; mount_idx < ${#target_overlay_mount_list[@]}; \
     mount_idx++ )); do
     target_overlay_mount="${target_overlay_mount_list[mount_idx]}"
-    mount -o remount,ro -- "${target_overlay_mount}" || continue
+
+    if ! mount -o remount,ro -- "${target_overlay_mount}"; then
+      continue
+    fi
 
     tmpfs_dir="${overlay_tmpfs_repo}/${mount_idx}"
     tmpfs_upper_dir="${tmpfs_dir}/upper"
