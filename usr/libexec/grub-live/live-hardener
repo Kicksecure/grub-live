@@ -202,7 +202,7 @@ mount_overlays() {
   ## If there are no directories to overlay, skip everything else
   [ "${#target_overlay_mount_list[@]}" = '0' ] && return
 
-  safe-rm -rf -- "${overlay_tmpfs_repo}"
+  safe-rm -r -f -- "${overlay_tmpfs_repo}"
   mkdir --parents -- "${overlay_tmpfs_repo}"
 
   for (( mount_idx = 0; mount_idx < ${#target_overlay_mount_list[@]}; \
@@ -229,7 +229,7 @@ mount_overlays() {
       ## leave them read-only and clean up the directories that would have
       ## been used to place a writable overlay on them.
       umount "${tmpfs_dir}"
-      safe-rm -rf -- "${tmpfs_dir}"
+      safe-rm -r -f -- "${tmpfs_dir}"
     fi
   done
 }
