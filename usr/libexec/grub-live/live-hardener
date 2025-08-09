@@ -263,3 +263,6 @@ if [ "${LIVE_HARDENER_TEST:-}" = 'true' ]; then
 else
   mount_overlays
 fi
+
+## TODO: breaks unit test
+#printf "%s\n" "$0: INFO: Success."
