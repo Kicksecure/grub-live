@@ -129,6 +129,8 @@ get_mount_list_to_overlay() {
     done
   done
 
+  ## TODO: /proc/self/mounts contents may have spaces and other encoded characters
+  ## https://unix.stackexchange.com/questions/317476/shell-code-to-check-if-a-device-or-file-with-spaces-in-the-path-is-mounted
   readarray -t proc_mount_path_list < <(
     awk '{ print $2 }' <<< "${proc_mount_contents}"
   )
