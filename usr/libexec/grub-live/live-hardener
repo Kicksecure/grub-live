@@ -199,8 +199,10 @@ mount_overlays() {
   local mount_idx target_overlay_mount tmpfs_dir tmpfs_upper_dir \
     tmpfs_work_dir
 
-  ## If there are no directories to overlay, skip everything else
-  [ "${#target_overlay_mount_list[@]}" = '0' ] && return
+  if [ "${#target_overlay_mount_list[@]}" = '0' ]; then
+    printf "%s\n" "$0: INFO: If there are no directories to overlay, skip everything else, ok."
+    return
+  fi
 
   safe-rm -r -f -- "${overlay_tmpfs_repo}"
   mkdir --parents -- "${overlay_tmpfs_repo}"
