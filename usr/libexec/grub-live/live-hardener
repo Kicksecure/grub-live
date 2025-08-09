@@ -95,6 +95,7 @@ get_mount_list_to_overlay() {
     exit 1
   elif [ -z "${proc_mount_contents}" ]; then
     printf "%s\n" "$0: ERROR: empty output from 'cat /proc/self/mounts'!" 1>&2
+    exit 1
   fi
 
   ## lsblk --raw output is a pain to parse unfortunately...
