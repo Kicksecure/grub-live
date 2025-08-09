@@ -146,6 +146,7 @@ get_mount_list_to_overlay() {
   elif (( ${#proc_mount_path_list[@]} <= 1 )) \
     && [ -z "${proc_mount_path_list[0]:-}" ]; then
     printf "%s\n" "$0: ERROR: 'proc_mount_path_list' array is empty!" 1>&2
+    exit 1
   fi
 
   for (( proc_mount_idx = 0; proc_mount_idx < ${#proc_mount_path_list[@]};
