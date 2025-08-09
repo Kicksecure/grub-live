@@ -214,7 +214,7 @@ mount_overlays() {
     tmpfs_upper_dir="${tmpfs_dir}/upper"
     tmpfs_work_dir="${tmpfs_dir}/work"
     mkdir --parents -- "${tmpfs_dir}"
-    mount -t tmpfs tmpfs "${tmpfs_dir}"
+    mount -t tmpfs tmpfs -- "${tmpfs_dir}"
     mkdir --parents -- "${tmpfs_upper_dir}"
     mkdir --parents -- "${tmpfs_work_dir}"
 
@@ -228,7 +228,7 @@ mount_overlays() {
       ## overlayfs (for instance, fat32). With these directories, we simply
       ## leave them read-only and clean up the directories that would have
       ## been used to place a writable overlay on them.
-      umount "${tmpfs_dir}"
+      umount -- "${tmpfs_dir}"
       safe-rm -r -f -- "${tmpfs_dir}"
     fi
   done
