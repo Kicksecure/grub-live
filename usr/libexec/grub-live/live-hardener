@@ -219,26 +219,27 @@ mount_overlays() {
     return
   fi
 
-  safe-rm -r -f -- "${overlay_tmpfs_repo}"
-  mkdir --parents -- "${overlay_tmpfs_repo}"
+  cmd_wrapper safe-rm -r -f -- "${overlay_tmpfs_repo}"
+  cmd_wrapper mkdir --parents -- "${overlay_tmpfs_repo}"
 
   for (( mount_idx = 0; mount_idx < ${#target_overlay_mount_list[@]}; \
     mount_idx++ )); do
     target_overlay_mount="${target_overlay_mount_list[mount_idx]}"
 
-    if ! mount -o remount,ro -- "${target_overlay_mount}"; then
+    if ! cmd_wrapper mount -o remount,ro -- "${target_overlay_mount}"; then
       continue
     fi
 
     tmpfs_dir="${overlay_tmpfs_repo}/${mount_idx}"
     tmpfs_upper_dir="${tmpfs_dir}/upper"
     tmpfs_work_dir="${tmpfs_dir}/work"
-    mkdir --parents -- "${tmpfs_dir}"
-    mount -t tmpfs tmpfs -- "${tmpfs_dir}"
-    mkdir --parents -- "${tmpfs_upper_dir}"
-    mkdir --parents -- "${tmpfs_work_dir}"
+    cmd_wrapper mkdir --parents -- "${tmpfs_dir}"
+    cmd_wrapper mount -t tmpfs tmpfs -- "${tmpfs_dir}"
+    cmd_wrapper mkdir --parents -- "${tmpfs_upper_dir}"
+    cmd_wrapper mkdir --parents -- "${tmpfs_work_dir}"
 
-    if ! mount \
+    if ! cmd_wrapper \
+      mount \
       -t overlay overlay \
       -o lowerdir="${target_overlay_mount}" \
       -o upperdir="${tmpfs_upper_dir}" \
@@ -249,8 +250,8 @@ mount_overlays() {
       ## overlayfs (for instance, fat32). With these directories, we simply
       ## leave them read-only and clean up the directories that would have
       ## been used to place a writable overlay on them.
-      umount -- "${tmpfs_dir}"
-      safe-rm -r -f -- "${tmpfs_dir}"
+      cmd_wrapper umount -- "${tmpfs_dir}"
+      cmd_wrapper safe-rm -r -f -- "${tmpfs_dir}"
     fi
   done
 }
