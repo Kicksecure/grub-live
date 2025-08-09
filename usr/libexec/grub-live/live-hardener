@@ -47,7 +47,7 @@ if ! [ -v kernel_cmdline ]; then
   fi
 fi
 if ! [ -v proc_mount_contents ]; then
-  proc_mount_contents="$(cat /proc/self/mounts)"
+  proc_mount_contents="$(cat -- /proc/self/mounts)"
 fi
 if ! [ -v lsblk_output ]; then
   lsblk_output="$(lsblk --raw --output=MOUNTPOINTS,RM | tail -n+2)"
@@ -94,7 +94,7 @@ get_mount_list_to_overlay() {
     printf "%s\n" "$0: ERROR: empty output from 'lsblk --raw --output=MOUNTPOINTS,RM'!" 1>&2
     exit 1
   elif [ -z "${proc_mount_contents}" ]; then
-    printf "%s\n" "$0: ERROR: empty output from 'cat /proc/self/mounts'!" 1>&2
+    printf "%s\n" "$0: ERROR: empty output from 'cat -- /proc/self/mounts'!" 1>&2
     exit 1
   fi
 
