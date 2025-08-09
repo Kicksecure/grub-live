@@ -218,7 +218,8 @@ mount_overlays() {
     mkdir --parents -- "${tmpfs_upper_dir}"
     mkdir --parents -- "${tmpfs_work_dir}"
 
-    if ! mount -t overlay overlay \
+    if ! mount \
+      -t overlay overlay \
       -o lowerdir="${target_overlay_mount}" \
       -o upperdir="${tmpfs_upper_dir}" \
       -o workdir="${tmpfs_work_dir}" \
