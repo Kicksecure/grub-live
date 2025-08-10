@@ -11,6 +11,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 fi
 
 source /usr/libexec/helper-scripts/wc-test.sh
+source /usr/libexec/helper-scripts/live-mode.sh
 
 overlay_tmpfs_repo='/var/lib/grub-live/overlay_tmpfs_repo'
 target_overlay_mount_list=()
@@ -64,28 +65,25 @@ cmd_wrapper() {
   fi
 }
 
-check_kernel_params() {
+check_in_live_mode() {
   ## We can't use systemd's ConditionKernelCommandLine here, since we want to
   ## run if any of several kernel parameters are set.
   ## ConditionKernelCommandLine only allows us to run if ALL listed kernel
   ## parameters are specified, which isn't expected to happen ever since some
   ## of the parameters are specific to Dracut and others are specific to
   ## initramfs-tools.
+  ##
+  ## We don't run live-hardener under ISO Live mode, it can cause installation
+  ## issues and doesn't add any useful amount of security (aside from things
+  ## like locking down the ability to modify UEFI variables, which is the very
+  ## behavior that causes installation issues).
 
-  local kernel_param
+  printf '%s\n' "live_status_detected_live_mode_environment_machine=${live_status_detected_live_mode_environment_machine}" 1>&2
 
-  # shellcheck disable=SC2068
-  for kernel_param in ${kernel_cmdline}; do
-    if [ "${kernel_param}" = 'rootovl' ] \
-      || [ "${kernel_param}" = 'rd.live.overlay.overlayfs=1' ] \
-      || [ "${kernel_param}" = 'boot=live' ] \
-      || [ "${kernel_param}" = 'nopersistence' ]; then
-      return
-    fi
-  done
-
-  printf "%s\n" "$0: INFO: System has not been booted in live mode, exiting, ok."
-  exit
+  if [ "${live_status_detected_live_mode_environment_machine}" = 'false' ] \
+    || [[ "${live_status_detected_live_mode_environment_machine}" =~ ^iso-live ]]; then
+    exit 0
+  fi
 }
 
 get_mount_list_to_overlay() {
@@ -256,7 +254,7 @@ mount_overlays() {
   done
 }
 
-check_kernel_params
+check_in_live_mode
 get_mount_list_to_overlay
 if [ "${LIVE_HARDENER_TEST:-}" = 'true' ]; then
   printf '%s\n' "${target_overlay_mount_list[@]}"
