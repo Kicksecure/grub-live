@@ -55,7 +55,7 @@ if ! [ -v lsblk_output ]; then
 fi
 
 cmd_wrapper() {
-  printf "%s\n" "$0: INFO: executing: $@"
+  printf "%s\n" "$0: INFO: executing: $*"
   if "$@"; then
     printf "%s\n" "$0: INFO: Success."
     return 0
