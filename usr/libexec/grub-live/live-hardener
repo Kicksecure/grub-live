@@ -82,6 +82,7 @@ check_in_live_mode() {
 
   if [ "${live_status_detected_live_mode_environment_machine}" = 'false' ] \
     || [[ "${live_status_detected_live_mode_environment_machine}" =~ ^iso-live ]]; then
+    printf "%s\n" "$0: INFO: iso-live mode detected, exiting, ok."
     exit 0
   fi
 }
