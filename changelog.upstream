@@ -1,3 +1,47 @@
+commit fba1ddfb34e341ec3247433dcfbcdfebefefdfee
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 10 04:45:22 2025 -0400
+
+    fix
+
+commit c1a6629107a48917f3e6f06322fab37cd79324c0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 10 06:34:08 2025 +0000
+
+    bumped changelog version
+
+commit 2b050cc7444a3a6a40e62e9d6d5223c833ec45ea
+Merge: b6f7447 35ccdf1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 10 02:31:56 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/live-improvements'
+
+commit b6f7447bcf8fdf5413385052c2ee6fe1c463277e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 10 02:24:58 2025 -0400
+
+    output
+
+commit 7956f5ceca7378045caade63c398f90f1354b661
+Merge: ff3661b 9e375ee
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 10 02:22:55 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/live-hardener-fix'
+
+commit 9e375eea54557198ea0b9079aaf29e2832e4e1e3
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Aug 9 21:54:10 2025 -0500
+
+    Keep live-hardener from running in ISO Live sessions, use unified live mode detection
+
+commit ff3661b38c73bb0ecc7a89f06aed4d324bae89c8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Aug 9 11:54:30 2025 +0000
+
+    bumped changelog version
+
 commit bc1da8f6e4d6baef1e1d399029937f8940241c7c
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Aug 9 07:24:25 2025 -0400
@@ -81,6 +125,12 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Aug 9 06:51:00 2025 -0400
 
     minor
+
+commit 35ccdf1c0cc5f32cbdbc69444ef52084bea167d0
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Aug 6 16:51:12 2025 -0500
+
+    Disable systemd-remount-fs and systemd-growfs-root in live mode
 
 commit 1727ebeaac2a2358053bfc0b49b465ab928098bb
 Author: Patrick Schleizer <adrelanos@whonix.org>
