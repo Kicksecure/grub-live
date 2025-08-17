@@ -13,7 +13,7 @@ fi
 source /usr/libexec/helper-scripts/wc-test.sh
 source /usr/libexec/helper-scripts/live-mode.sh
 
-overlay_tmpfs_repo='/var/lib/grub-live/overlay_tmpfs_repo'
+overlay_tmpfs_repo='/run/grub-live/overlay_tmpfs_repo'
 target_overlay_mount_list=()
 dir_submount_list=()
 skip_dir_overlay_bool_list=()
