@@ -93,25 +93,40 @@ additional_lsblk_table=(
 /home\x0a/srv\x0a/var\x0a 0' # 10
 )
 
-base_expected_output_str='/sys/firmware/efi/efivars
-/sys/fs/pstore'
-
 expected_output_table=(
-  '/home' # 1
+  '/home
+/sys/firmware/efi/efivars
+/sys/fs/pstore' # 1
   '/mnt/drive1
-/mnt/drive2' # 2
-  '/mnt/drive2' # 3
-  '' # 4
-  '/mnt/drive1' # 5
-  '/mnt/drive2' # 6
-  '' # 7
+/mnt/drive2
+/sys/firmware/efi/efivars
+/sys/fs/pstore' # 2
+  '/mnt/drive2
+/sys/firmware/efi/efivars
+/sys/fs/pstore' # 3
+  '/sys/firmware/efi/efivars
+/sys/fs/pstore' # 4
+  '/mnt/drive1
+/sys/firmware/efi/efivars
+/sys/fs/pstore' # 5
+  '/mnt/drive2
+/sys/firmware/efi/efivars
+/sys/fs/pstore' # 6
+  '/sys/firmware/efi/efivars
+/sys/fs/pstore' # 7
   '/home
 /srv
+/sys/firmware/efi/efivars
+/sys/fs/pstore
 /var' # 8
   '/home
 /srv
+/sys/firmware/efi/efivars
+/sys/fs/pstore
 /var' # 9
   '/home
+/sys/firmware/efi/efivars
+/sys/fs/pstore
 /var' # 10
 )
 
@@ -138,9 +153,9 @@ run_live_hardener_assert() {
 
   proc_mount_contents="${base_mount_str}${additional_mount_entry}"
   lsblk_output="${base_lsblk_str}${additional_lsblk_entry}"
-  expect_str="${base_expected_output_str}"
+  expect_str=""
   if [ -n "${expected_output_table[item_idx]}" ]; then
-    expect_str+=$'\n'"${expected_output_table[item_idx]}"
+    expect_str+="${expected_output_table[item_idx]}"
   fi
   result_str="$(source usr/libexec/grub-live/live-hardener)"
 
