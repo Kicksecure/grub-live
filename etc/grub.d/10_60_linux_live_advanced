@@ -38,9 +38,11 @@ pkg_installed() {
    return 1
 }
 
-if [ -n "${GRUB_DEVICE_UUID}" ]; then
-  GRUB_DEVICE="/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
-  unset GRUB_DEVICE_UUID
+if pkg_installed initramfs-tools; then
+  if [ -n "${GRUB_DEVICE_UUID}" ]; then
+    GRUB_DEVICE="/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
+    unset GRUB_DEVICE_UUID
+  fi
 fi
 
 grub_distributor_appendix="LIVE Mode | USER Session | For disposable use"
@@ -82,14 +84,12 @@ grub-live $0: ERROR: It has been detected that this system is using dracut but b
    ## https://www.kicksecure.com/wiki/Grub-live#Developer_Information
 
    ## using Debian forked upstream module 90overlay-root
-   ## works on Debian bookworm
-   ## TODO: disable this on Debian trixie
-   GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl"
+   ## Disabled on Debian trixie.
+   ## GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl"
 
    ## using dracut upstream module 90overlayfs
-   ## TODO: use this on Debian trixie
    ## NOTE: overlayfs module needed
-   #GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.overlayfs=1 "
+   GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.overlayfs=1 "
 
    ## Unnecessary! It's for systems where you have an immutable base filesystem and a persistent overlay,
    ## and you want to make the overlay read-only, putting another overlay on top of it.

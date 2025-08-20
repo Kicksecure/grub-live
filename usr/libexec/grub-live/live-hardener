@@ -13,8 +13,11 @@ fi
 source /usr/libexec/helper-scripts/wc-test.sh
 source /usr/libexec/helper-scripts/live-mode.sh
 
-overlay_tmpfs_repo='/var/lib/grub-live/overlay_tmpfs_repo'
+overlay_tmpfs_repo='/run/grub-live/overlay_tmpfs_repo'
 target_overlay_mount_list=()
+dir_submount_list=()
+skip_dir_overlay_bool_list=()
+skip_remount_ro_bool_list=()
 fs_type_whitelist=(
   'nfs'
   'proc'
@@ -37,16 +40,13 @@ fs_type_whitelist=(
   'debugfs'
   'overlay'
 )
+allow_hiding_submounts_list=(
+  '/boot'
+)
+disallow_readonly_with_submounts_list=(
+  '/var'
+)
 
-if ! [ -v kernel_cmdline ]; then
-  if [ -f '/proc/cmdline' ]; then
-    kernel_cmdline="$(cat -- /proc/cmdline)"
-  elif [ -f '/proc/1/cmdline' ]; then
-    kernel_cmdline="$(cat -- /proc/1/cmdline)"
-  else
-    kernel_cmdline=''
-  fi
-fi
 if ! [ -v proc_mount_contents ]; then
   proc_mount_contents="$(cat -- /proc/self/mounts)"
 fi
@@ -204,14 +204,20 @@ get_mount_list_to_overlay() {
     done
 
     if [ "${is_fs_readonly}" = 'false' ]; then
-      target_overlay_mount_list+=( "${proc_mount_path}" );
+      target_overlay_mount_list+=( "${proc_mount_path}" )
+      skip_dir_overlay_bool_list+=( 'false' )
+      skip_remount_ro_bool_list+=( 'false' )
     fi
   done
+
+  readarray -t target_overlay_mount_list <<< "$(IFS=$'\n'; echo "${target_overlay_mount_list[*]}" | LC_ALL='C' sort)"
 }
 
 mount_overlays() {
   local mount_idx target_overlay_mount tmpfs_dir tmpfs_upper_dir \
-    tmpfs_work_dir
+    tmpfs_work_dir target_dir allow_hide_submounts_dir \
+    disallow_readonly_dir skip_dir_overlay allow_hide_submounts \
+    skip_remount_ro target_dir_idx
 
   if [ "${#target_overlay_mount_list[@]}" = '0' ]; then
     printf "%s\n" "$0: INFO: If there are no directories to overlay, skip everything else, ok."
@@ -221,11 +227,82 @@ mount_overlays() {
   cmd_wrapper safe-rm -r -f -- "${overlay_tmpfs_repo}"
   cmd_wrapper mkdir --parents -- "${overlay_tmpfs_repo}"
 
-  for (( mount_idx = 0; mount_idx < ${#target_overlay_mount_list[@]}; \
-    mount_idx++ )); do
+  # Find dirs that should not be overlaid or mounted read-only
+  for mount_idx in "${!target_overlay_mount_list[@]}"; do
     target_overlay_mount="${target_overlay_mount_list[mount_idx]}"
+    skip_dir_overlay="false"
+    skip_remount_ro='false'
+    allow_hide_submounts='false'
+
+    for target_dir in "${dir_submount_list[@]}"; do
+      if [ "${target_overlay_mount}" = "${target_dir}" ]; then
+        for allow_hide_submounts_dir in "${allow_hiding_submounts_list[@]}"; do
+          if [ "${target_overlay_mount}" = "${allow_hide_submounts_dir}" ]; then
+            allow_hide_submounts='true'
+            break
+          fi
+        done
+        if [ "${allow_hide_submounts}" = 'true' ]; then
+          break
+        fi
+
+        for disallow_readonly_dir in "${disallow_readonly_with_submounts_list[@]}"; do
+          if [ "${target_overlay_mount}" = "${disallow_readonly_dir}" ]; then
+            skip_remount_ro='true'
+            skip_dir_overlay='true'
+            break
+          fi
+        done
+        if [ "${skip_remount_ro}" = 'true' ]; then
+          break
+        fi
+
+        skip_dir_overlay='true'
+        break
+      fi
+    done
+
+    ## 'false' values can be flipped to 'true', but 'true' values should never
+    ## be flipped to 'false'.
+    if [ "${skip_dir_overlay}" = 'true' ]; then
+      skip_dir_overlay_bool_list[mount_idx]='true'
+    fi
+    if [ "${skip_remount_ro}" = 'true' ]; then
+      skip_remount_ro_bool_list[mount_idx]='true'
+    fi
+
+    if [ "${allow_hide_submounts}" = 'true' ]; then
+      ## Mark all submounts so that they are not overlaid.
+      for target_dir_idx in "${!target_overlay_mount_list[@]}"; do
+        target_dir="${target_overlay_mount_list[target_dir_idx]}"
+        if [ "${target_dir}" != "${target_overlay_mount}" ] \
+          && [[ "${target_dir}" =~ ^"${target_overlay_mount}" ]]; then
+          skip_dir_overlay_bool_list[target_dir_idx]='true'
+        fi
+      done
+    fi
+  done
+
+  # Remount targeted directories read-only
+  for mount_idx in "${!target_overlay_mount_list[@]}"; do
+    target_overlay_mount="${target_overlay_mount_list[mount_idx]}"
+    skip_remount_ro="${skip_remount_ro_bool_list[mount_idx]}"
+
+    if [ "${skip_remount_ro}" = 'true' ]; then
+      continue
+    fi
 
     if ! cmd_wrapper mount -o remount,ro -- "${target_overlay_mount}"; then
+      skip_dir_overlay_bool_list[mount_idx]='true'
+    fi
+  done
+
+  # Mount writable overlays over those directories that are safe to overlay
+  for mount_idx in "${!target_overlay_mount_list[@]}"; do
+    target_overlay_mount="${target_overlay_mount_list[mount_idx]}"
+    skip_dir_overlay="${skip_dir_overlay_bool_list[mount_idx]}";
+
+    if [ "${skip_dir_overlay}" = 'true' ]; then
       continue
     fi
 
@@ -255,8 +332,27 @@ mount_overlays() {
   done
 }
 
+find_submount_dirs() {
+  local prev_item counter
+
+  if (( ${#target_overlay_mount_list[@]} <= 1 )); then
+    return
+  fi
+
+  prev_item="${target_overlay_mount_list[0]}"
+  ## counter = 1, not 0, since we're comparing each item in the list with the
+  ## item before it.
+  for (( counter = 1; counter < ${#target_overlay_mount_list[@]}; counter++ )); do
+    if [[ "${target_overlay_mount_list[counter]}" =~ ^"${prev_item}" ]]; then
+      dir_submount_list+=( "${prev_item}" )
+    fi
+    prev_item="${target_overlay_mount_list[counter]}"
+  done
+}
+
 check_in_live_mode
 get_mount_list_to_overlay
+find_submount_dirs
 if [ "${LIVE_HARDENER_TEST:-}" = 'true' ]; then
   printf '%s\n' "${target_overlay_mount_list[@]}"
 else
