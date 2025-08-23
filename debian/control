@@ -13,10 +13,12 @@ Standards-Version: 4.7.2
 Rules-Requires-Root: no
 
 Package: grub-live
-Provides: grub-live-boot, boot-live
 Architecture: all
-Depends: grub-live-initramfs-tools | grub-live-dracut, ${misc:Depends}
+Depends: ${misc:Depends}
 Description: grub live boot menu entry
+ Base grub-live package. You probably do not want to install this directly,
+ install grub-live-dracut instead.
+ .
  Allows booting the system in live mode. Meaning, no persistent modifications
  will be written to the disk. All changes stay in RAM.
  .
@@ -25,15 +27,6 @@ Description: grub live boot menu entry
  Existing grub boot entries stay unmodified.
  .
  No claims are made with regard to anti forensics.
-
-Package: grub-live-initramfs-tools
-Provides: grub-live-boot, boot-live
-Architecture: all
-Depends: grub-live, live-boot, live-tools, ${misc:Depends}
-Description: grub live initramfs-tools dependencies
- initramfs-tools version metapackage for grub-live
- .
- See also grub-live package.
 
 Package: grub-live-dracut
 Provides: grub-live-boot, boot-live

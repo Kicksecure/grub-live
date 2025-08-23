@@ -66,12 +66,8 @@ cmd_wrapper() {
 }
 
 check_in_live_mode() {
-  ## We can't use systemd's ConditionKernelCommandLine here, since we want to
-  ## run if any of several kernel parameters are set.
-  ## ConditionKernelCommandLine only allows us to run if ALL listed kernel
-  ## parameters are specified, which isn't expected to happen ever since some
-  ## of the parameters are specific to Dracut and others are specific to
-  ## initramfs-tools.
+  ## Better to use the unified live mode testing code than to rely on
+  ## systemd's ConditionKernelCommandLine here.
   ##
   ## We don't run live-hardener under ISO Live mode, it can cause installation
   ## issues and doesn't add any useful amount of security (aside from things
