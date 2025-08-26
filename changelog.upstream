@@ -1,3 +1,67 @@
+commit fdac325d103939e25f42461fe287cc8ea0eee190
+Merge: 73e8b23 52a0332
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 20 07:29:02 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 73e8b234a77841e463f642bad70dbf44367a62aa
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 20 06:57:25 2025 -0400
+
+    bumped Standards-Version
+
+commit cfc2100f4df6ff508f21c6622eaf8ab8c8f8dd28
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 20 06:25:32 2025 -0400
+
+    readme
+
+commit 52a03324047d226acdd1696c8004d1f1c5363e41
+Merge: 80e7f6c 310255f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Aug 17 13:42:19 2025 -0500
+
+    Merge branch 'arraybolt3/live-hardener-fix' into arraybolt3/trixie
+
+commit 310255ffa74ed9d33e600a3537682b6c3563dcc6
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Aug 17 13:41:49 2025 -0500
+
+    Put live-hardener's overlay repo under /run to avoid issues if /var is on a separate partition
+
+commit 80e7f6c3910f4785350ee4ea800a0c50ccfdb776
+Merge: 685d1d6 28f3bc3
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Aug 17 13:26:15 2025 -0500
+
+    Merge branch 'arraybolt3/live-hardener-fix' into arraybolt3/trixie
+
+commit 28f3bc3d6cd6f3bbc2d9984210d93b817e8ad880
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Aug 17 13:25:58 2025 -0500
+
+    Fix live-hardener behavior when dealing with mountpoints under non-root mountpoints
+
+commit 685d1d676aed78ce4da1aa75c6a6c6da3c2d5c1a
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Aug 16 21:43:59 2025 -0500
+
+    Don't unset GRUB_DEVICE_UUID unless using initramfs-tools
+
+commit 22cdb7339ff638a76eecfd32e72d2879def18edf
+Merge: 08515a5 941743e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Aug 10 14:08:49 2025 -0500
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 941743ec28f01ec6923ed3470ad8916d7c6c2901
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Aug 10 08:45:33 2025 +0000
+
+    bumped changelog version
+
 commit fba1ddfb34e341ec3247433dcfbcdfebefefdfee
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Aug 10 04:45:22 2025 -0400
@@ -30,11 +94,25 @@ Date:   Sun Aug 10 02:22:55 2025 -0400
 
     Merge remote-tracking branch 'ArrayBolt3/arraybolt3/live-hardener-fix'
 
+commit 08515a5c83642aaed07bc008f6739a17fb93cbd9
+Merge: b0c65ae 9e375ee
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Aug 9 23:31:30 2025 -0500
+
+    Merge branch 'arraybolt3/live-hardener-fix' into arraybolt3/trixie
+
 commit 9e375eea54557198ea0b9079aaf29e2832e4e1e3
 Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
 Date:   Sat Aug 9 21:54:10 2025 -0500
 
     Keep live-hardener from running in ISO Live sessions, use unified live mode detection
+
+commit b0c65ae62b6c79c70ed2a14924981ee0de2b88ea
+Merge: 348ed33 ff3661b
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Aug 9 21:33:52 2025 -0500
+
+    Merge branch 'master' into arraybolt3/trixie
 
 commit ff3661b38c73bb0ecc7a89f06aed4d324bae89c8
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -126,11 +204,24 @@ Date:   Sat Aug 9 06:51:00 2025 -0400
 
     minor
 
+commit 348ed332bc861c73c8508d9e1d2f2b070c9004ed
+Merge: 30fe822 35ccdf1
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Aug 6 16:52:51 2025 -0500
+
+    Merge branch 'arraybolt3/live-improvements' into arraybolt3/trixie
+
 commit 35ccdf1c0cc5f32cbdbc69444ef52084bea167d0
 Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
 Date:   Wed Aug 6 16:51:12 2025 -0500
 
     Disable systemd-remount-fs and systemd-growfs-root in live mode
+
+commit 30fe8225579d6e98e0c084f5a34e183e5cfbb16f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Aug 5 22:58:00 2025 -0500
+
+    Port to Trixie.
 
 commit 1727ebeaac2a2358053bfc0b49b465ab928098bb
 Author: Patrick Schleizer <adrelanos@whonix.org>
