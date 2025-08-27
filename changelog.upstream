@@ -1,3 +1,29 @@
+commit 83b315f1ed738fa33702fdac2dc711ecf5360e8b
+Merge: 2a8e03a cbf249a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 27 04:43:10 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit cbf249ace397488792ff328d8f8fc750c85c85e1
+Merge: 240446d 2a8e03a
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Aug 26 19:19:36 2025 -0500
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 2a8e03a888f6e71270d7f341488df55c1c70f505
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Aug 26 09:04:58 2025 +0000
+
+    bumped changelog version
+
+commit 240446d578b887c633e6729ac0cc0c99ec195849
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Aug 22 19:39:12 2025 -0500
+
+    Remove support for initramfs-tools
+
 commit fdac325d103939e25f42461fe287cc8ea0eee190
 Merge: 73e8b23 52a0332
 Author: Patrick Schleizer <adrelanos@whonix.org>
