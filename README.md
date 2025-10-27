@@ -1,5 +1,8 @@
 # grub live boot menu entry #
 
+Base grub-live package. You probably do not want to install this directly,
+install grub-live-dracut instead.
+
 Allows booting the system in live mode. Meaning, no persistent modifications
 will be written to the disk. All changes stay in RAM.
 
