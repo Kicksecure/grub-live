@@ -60,7 +60,7 @@ cmd_wrapper() {
     printf "%s\n" "$0: INFO: Success."
     return 0
   else
-    printf "%s\n" "$0: INFO: Non-zero exit code."
+    printf "%s\n" "$0: ERROR: Non-zero exit code."
     return 1
   fi
 }
