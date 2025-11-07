@@ -1,3 +1,28 @@
+commit 80e1f50ad2aad8071de3870e0d406703d9dfa051
+Merge: cd3148c d9a1a63
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 7 05:41:50 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit d9a1a63b58d85e01d7abbaf2be34c9c89a0cf41d
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Nov 6 23:13:12 2025 -0600
+
+    Improve regression test coverage of live-hardener, fix bugs and avoid spurious errors in logs
+
+commit 233b2baea05100a1492aa1d4612a8972036ab41e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Nov 6 22:45:35 2025 -0600
+
+    Ensure dmsquash-live module is present in initramfs, omit Debian-specific overlay-root module
+
+commit cd3148ccd48989cac59cdcc09927648b0b266a23
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Nov 5 11:27:15 2025 +0000
+
+    bumped changelog version
+
 commit 06e099f09951e9fe62baf9519711b9414207cdca
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Nov 5 02:28:18 2025 -0500
