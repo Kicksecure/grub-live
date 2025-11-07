@@ -13,11 +13,33 @@ fi
 source /usr/libexec/helper-scripts/wc-test.sh
 source /usr/libexec/helper-scripts/live-mode.sh
 
+## The location where tmpfs directories are created. These are used as the upper
+## dirs for overlayfs mounts later.
 overlay_tmpfs_repo='/run/grub-live/overlay_tmpfs_repo'
+
+## Directories that should be remounted read-only and (if possible) overlaid
+## with a tmpfs.
 target_overlay_mount_list=()
+
+## Mountpoints on the system that have other mountpoints beneath them. We
+## usually (but not always) want to avoid mounting overlays on these mounts,
+## because OverlayFS will hide all the submounts.
 dir_submount_list=()
+
+## 'true' and 'false' values, one for each mount in target_overlay_mount_list.
+## If a mount has a 'true' value in this list, it indicates that the mount
+## should only be remounted read-only, but not overlaid.
 skip_dir_overlay_bool_list=()
-skip_remount_ro_bool_list=()
+
+## Lists of mount paths, filesystem types, and mount attributes from
+## /proc/self/mounts. The values in these lists are sorted, see
+## populate_proc_mount_lists for details of the sort order.
+proc_mount_path_list=()
+proc_mount_type_list=()
+proc_mount_attr_list=()
+
+## Filesystems we do not want to remount read-only and overlay. Network
+## filesystems and special filesystems belong here.
 fs_type_whitelist=(
   'nfs'
   'proc'
@@ -40,20 +62,67 @@ fs_type_whitelist=(
   'debugfs'
   'overlay'
 )
+
+## Filesystems we want to remount read-only but not overlay. Filesystems that
+## OverlayFS considers "weird" should be listed here, see
+## https://lkml.kernel.org/linux-ext4/CAOQ4uxgPXBazE-g2v=T_vOvnr_f0ZHyKYZ4wvn7A3ePatZrhnQ@mail.gmail.com/T/
+fs_type_nooverlay_list=(
+  'cifs'
+  'efivarfs'
+  'iso9660'
+  'jfs'
+  'vfat'
+  'overlay'
+)
+
+## Mounts we want to overlay even if it requires hiding submounts.
 allow_hiding_submounts_list=(
+  ## /boot will usually have /boot/efi as a submount. It is very unlikely
+  ## anyone will need to modify /boot/efi in live mode, so we're fine with
+  ## hiding it.
   '/boot'
 )
+
+## Mounts we don't even want to remount read-only, if they have submounts.
 disallow_readonly_with_submounts_list=(
+  ## /var is always expected to be writable. If it has no submounts, we can
+  ## make it read-only and overlay it, but if it does have submounts, we can't
+  ## overlay it without hiding those submounts. We can't remount it read-only
+  ## either in such a situation.
   '/var'
 )
 
+## Mounts we don't want to remount read-only under any circumstance.
+disallow_readonly_list=(
+  ## /run/rootfsbase has a read/write tmpfs overlay on it already when booted
+  ## in live mode. It *also* has several other hidden mounts on it, so the
+  ## check for the 'overlay' filesystem isn't enough to prevent the script
+  ## from trying to remount it read-only, so we need to ignore it explicitly.
+  '/run/rootfsbase'
+)
+
+## The ASCII control codes SOH and STX. These are used for adjusting string
+## sort order.
+ascii_soh="$(printf '%b' '\001')"
+ascii_stx="$(printf '%b' '\002')"
+
+## The contents of /proc/self/mounts. This variable may be set by the
+## regression test script, so we only populate it with real data if we need
+## to.
 if ! [ -v proc_mount_contents ]; then
   proc_mount_contents="$(cat -- /proc/self/mounts)"
 fi
+## A string containing a list of mountpoints and whether each one is located
+## on a removable disk or not. lsblk --raw output provides info about one disk
+## on each line. The two fields we ask lsblk to return are separated by a
+## space; the first field is the path(s) the disk is mounted to, the second
+## field is 1 if the disk is removable and 0 otherwise. The mount data uses
+## octal escape codes for spaces, newlines, etc.
 if ! [ -v lsblk_output ]; then
   lsblk_output="$(lsblk --raw --output=MOUNTPOINTS,RM | tail -n+2)"
 fi
 
+## Wrapper to run a command and report success or failure.
 cmd_wrapper() {
   printf "%s\n" "$0: INFO: executing: $*"
   if "$@"; then
@@ -65,6 +134,7 @@ cmd_wrapper() {
   fi
 }
 
+## Checks if the system is booted in live mode or not.
 check_in_live_mode() {
   ## Better to use the unified live mode testing code than to rely on
   ## systemd's ConditionKernelCommandLine here.
@@ -83,14 +153,93 @@ check_in_live_mode() {
   fi
 }
 
-get_mount_list_to_overlay() {
-  local lsblk_raw_list lsblk_path_list \
-    lsblk_removable_list lsblk_raw_str lsblk_raw_path_str \
-    lsblk_raw_path_list lsblk_raw_path proc_mount_path_list \
-    proc_mount_attr_list lsblk_idx lsblk_path lsblk_removable proc_mount_idx \
-    fs_attr_list fs_attr_item is_fs_readonly is_removable is_fs_whitelisted \
-    fs_whitelist_idx proc_mount_type proc_mount_path proc_mount_type_list
+## Populates proc_mount_path_list, proc_mount_type_list, and
+## proc_mount_attr_list.
+populate_proc_mount_lists() {
+  local proc_mount_annotated_str line proc_mount_path
 
+  ## In order for submount detection to work, we need to have the proc_mount
+  ## lists specify their items such that all paths under one directory are
+  ## grouped together, and all sibling directories are sorted alphabetically.
+  ## This allows us to determine if a path contains submounts or not, by
+  ## detecting if the path after it starts with the original path name plus a
+  ## trailing slash. I.e., given the following list of mounts:
+  ## - /etc
+  ## - /var
+  ## - /var/log
+  ## - /vara
+  ## - /home
+  ## We can determine that /var contains submounts, because the path after it
+  ## starts with '/var/'.
+  ##
+  ## This sort order is equivalent to an alphabetic sort, except for the
+  ## forward slash is given the absolute highest priority. The easiest way to
+  ## adjust the sort order this way is to replace the forward slash with some
+  ## character that sorts higher than anything else. The ASCII control code
+  ## STX is a good candidate for this, because it is extremely unlikely to
+  ## occur in a real path, and it is the character with the second-highest
+  ## sorting order in the C locale.
+  ##
+  ## We want to sort the entire contents of proc_mount_contents by the second
+  ## field, so in order to accomplish this, we use a Decorate-Sort-Undecorate
+  ## routine. The decorator is the second field from proc_mount_contents, with
+  ## all slashes replaced with the SOH control code. (If we wanted to cope
+  ## with the possibility of a SOH character in a path, we could replace SOH
+  ## characters with forward slashes, but this is probably unnecessary.)
+  ##
+  ## We need the separator between the decorator and the rest of the mount
+  ## information to sort higher even than the slash. SOH is a good choice for
+  ## this. (Even if SOH characters appear in the path, this won't cause a
+  ## problem, because only the first SOH in each decorated line acts as a
+  ## separator.)
+
+  ## Decorate the lines from proc_mount_contents.
+  proc_mount_annotated_str=''
+  while read -r line; do
+    ## TODO: /proc/self/mounts contents may have spaces and other encoded
+    ## characters
+    ## https://unix.stackexchange.com/questions/317476/shell-code-to-check-if-a-device-or-file-with-spaces-in-the-path-is-mounted
+    proc_mount_path="$(cut -d' ' -f2 <<< "${line}")"
+    proc_mount_path="${proc_mount_path//\//"${ascii_stx}"}"
+    proc_mount_annotated_str+="${proc_mount_path}${ascii_soh}${line}"$'\n'
+  done <<< "${proc_mount_contents}"
+
+  ## Sort and undecorate the lines.
+  proc_mount_annotated_str="$(LC_ALL='C' sort \
+    <<< "${proc_mount_annotated_str}")"
+  proc_mount_contents="$(cut -d"${ascii_soh}" -f2- \
+    <<< "${proc_mount_annotated_str}")"
+
+  ## Split the sorted string into the proc_mount lists.
+  readarray -t proc_mount_path_list < <(
+    awk '{ print $2 }' <<< "${proc_mount_contents}"
+  )
+  readarray -t proc_mount_type_list < <(
+    awk '{ print $3 }' <<< "${proc_mount_contents}"
+  )
+  readarray -t proc_mount_attr_list < <(
+    awk '{ print $4 }' <<< "${proc_mount_contents}"
+  )
+  if (( ${#proc_mount_path_list[@]} <= 1 )) \
+    && [ -z "${proc_mount_path_list[0]:-}" ]; then
+    printf "%s\n" "$0: ERROR: 'proc_mount_path_list' array is empty!" 1>&2
+    exit 1
+  fi
+}
+
+## Finds all mounts on the system that should be remounted read-only and
+## overlaid.
+get_mount_list_to_harden() {
+  local lsblk_raw_list lsblk_path_list overlay_mount_list_str \
+    lsblk_removable_list lsblk_raw_str lsblk_raw_path_str \
+    lsblk_raw_path_list lsblk_raw_path lsblk_idx lsblk_path lsblk_removable \
+    proc_mount_idx fs_attr_list fs_attr_item skip_fs_remount_ro is_removable \
+    is_fs_whitelisted fs_whitelist_idx proc_mount_type proc_mount_path \
+    disallow_readonly_dir submount_dir mount_idx target_overlay_mount \
+    skip_dir_overlay allow_hide_submounts submount_dir allow_hide_submounts \
+    fs_nooverlay_item allow_hide_submounts_dir target_dir_idx target_dir
+
+  ## Ensure lsblk_output and proc_mount_contents are set
   if [ -z "${lsblk_output}" ]; then
     printf "%s\n" "$0: ERROR: empty output from 'lsblk --raw --output=MOUNTPOINTS,RM'!" 1>&2
     exit 1
@@ -99,7 +248,9 @@ get_mount_list_to_overlay() {
     exit 1
   fi
 
-  ## lsblk --raw output is a pain to parse unfortunately...
+  ## Expand the raw output from lsblk into two correlated lists, one
+  ## specifying mount paths, the other specifying whether each mount path is
+  ## located on a removable disk.
   readarray -t lsblk_raw_list <<< "${lsblk_output}"
   if (( ${#lsblk_raw_list[@]} <= 1 )) \
     || [ -z "${lsblk_raw_list[0]:-}" ]; then
@@ -108,7 +259,7 @@ get_mount_list_to_overlay() {
   fi
   lsblk_path_list=()
   lsblk_removable_list=()
-  for (( lsblk_idx = 0; lsblk_idx < ${#lsblk_raw_list[@]}; lsblk_idx++ )); do
+  for lsblk_idx in "${!lsblk_raw_list[@]}"; do
     lsblk_raw_str="${lsblk_raw_list[lsblk_idx]}"
 
     if [ "${lsblk_raw_str:0:1}" = ' ' ]; then
@@ -130,34 +281,18 @@ get_mount_list_to_overlay() {
     done
   done
 
-  ## TODO: /proc/self/mounts contents may have spaces and other encoded characters
-  ## https://unix.stackexchange.com/questions/317476/shell-code-to-check-if-a-device-or-file-with-spaces-in-the-path-is-mounted
-  readarray -t proc_mount_path_list < <(
-    awk '{ print $2 }' <<< "${proc_mount_contents}"
-  )
-  readarray -t proc_mount_type_list < <(
-    awk '{ print $3 }' <<< "${proc_mount_contents}"
-  )
-  readarray -t proc_mount_attr_list < <(
-    awk '{ print $4 }' <<< "${proc_mount_contents}"
-  )
-
   if (( ${#lsblk_path_list[@]} <= 1 )) \
     && [ -z "${lsblk_path_list[0]:-}" ]; then
     printf "%s\n" "$0: ERROR: 'lsblk_path_list' array is empty!" 1>&2
     exit 1
-  elif (( ${#proc_mount_path_list[@]} <= 1 )) \
-    && [ -z "${proc_mount_path_list[0]:-}" ]; then
-    printf "%s\n" "$0: ERROR: 'proc_mount_path_list' array is empty!" 1>&2
-    exit 1
   fi
 
-  for (( proc_mount_idx = 0; proc_mount_idx < ${#proc_mount_path_list[@]};
-    proc_mount_idx++ )); do
+  ## Build the list of mounts to harden from the list of mounts on the system.
+  for proc_mount_idx in "${!proc_mount_path_list[@]}"; do
+    ## Skip mounts for whitelisted filesystems.
     proc_mount_type="${proc_mount_type_list[proc_mount_idx]}"
     is_fs_whitelisted='false'
-    for (( fs_whitelist_idx = 0; \
-      fs_whitelist_idx < ${#fs_type_whitelist[@]}; fs_whitelist_idx++ )); do
+    for fs_whitelist_idx in "${!fs_type_whitelist[@]}"; do
       if [ "${fs_type_whitelist[fs_whitelist_idx]}" = "${proc_mount_type}" ];
         then is_fs_whitelisted='true'
         break
@@ -167,14 +302,14 @@ get_mount_list_to_overlay() {
       continue
     fi
 
+    ## Skip mounts for removable media under (or on) /media and /mnt.
     proc_mount_path="${proc_mount_path_list[proc_mount_idx]}"
     is_removable='false'
     if [[ "${proc_mount_path}" =~ ^/media/ ]] \
       || [[ "${proc_mount_path}" =~ ^/mnt/ ]] \
       || [ "${proc_mount_path}" = '/media' ] \
       || [ "${proc_mount_path}" = '/mnt' ]; then
-      for (( lsblk_idx = 0; lsblk_idx < ${#lsblk_path_list[@]}; \
-        lsblk_idx++ )); do
+      for lsblk_idx in "${!lsblk_path_list[@]}"; do
         lsblk_path="${lsblk_path_list[lsblk_idx]}"
         if [ "${lsblk_path}" = "${proc_mount_path}" ]; then
           lsblk_removable="${lsblk_removable_list[lsblk_idx]}"
@@ -189,49 +324,81 @@ get_mount_list_to_overlay() {
       fi
     fi
 
-    is_fs_readonly='true'
+    ## Skip mounts that are already read-only.
+    skip_fs_remount_ro='true'
     IFS=',' read -r -a fs_attr_list \
       <<< "${proc_mount_attr_list[proc_mount_idx]}"
     for fs_attr_item in "${fs_attr_list[@]}"; do
       if [ "${fs_attr_item}" = 'rw' ]; then
-        is_fs_readonly='false'
+        skip_fs_remount_ro='false'
         break
       fi
     done
-
-    if [ "${is_fs_readonly}" = 'false' ]; then
-      target_overlay_mount_list+=( "${proc_mount_path}" )
-      skip_dir_overlay_bool_list+=( 'false' )
-      skip_remount_ro_bool_list+=( 'false' )
+    if [ "${skip_fs_remount_ro}" = 'true' ]; then
+      continue
     fi
+
+    ## Skip mounts that are listed in disallow_readonly_list.
+    for disallow_readonly_dir in "${disallow_readonly_list[@]}"; do
+      if [ "${disallow_readonly_dir}" = "${proc_mount_path}" ]; then
+        skip_fs_remount_ro='true'
+        break
+      fi
+    done
+    if [ "${skip_fs_remount_ro}" = 'true' ]; then
+      continue
+    fi
+
+    ## Skip mounts that are listed in disallow_readonly_with_submounts_list,
+    ## if those mounts contain submounts.
+    for submount_dir in "${dir_submount_list[@]}"; do
+      if [ "${proc_mount_path}" = "${submount_dir}" ]; then
+        for disallow_readonly_dir in "${disallow_readonly_with_submounts_list[@]}"; do
+          if [ "${proc_mount_path}" = "${disallow_readonly_dir}" ]; then
+            skip_fs_remount_ro='true'
+            break
+          fi
+        done
+        if [ "${skip_fs_remount_ro}" = 'true' ]; then
+          break
+        fi
+      fi
+    done
+    if [ "${skip_fs_remount_ro}" = 'true' ]; then
+      continue
+    fi
+
+    ## If we got this far, this is a mount we want to harden. Add it to the
+    ## list and mark it as needing remounted read-only and overlaid. (We will
+    ## mark mounts that need to be remounted read-only but not overlaid
+    # a bit later.)
+    overlay_mount_list_str+="${proc_mount_path}"$'\n'
+    skip_dir_overlay_bool_list+=( 'false' )
   done
 
-  readarray -t target_overlay_mount_list <<< "$(IFS=$'\n'; echo "${target_overlay_mount_list[*]}" | LC_ALL='C' sort)"
-}
+  ## Trim a trailing newline from overlay_mount_list_str to keep it from
+  ## becoming an additional array element.
+  overlay_mount_list_str="$(head -c-1 <<< "${overlay_mount_list_str}")"
 
-mount_overlays() {
-  local mount_idx target_overlay_mount tmpfs_dir tmpfs_upper_dir \
-    tmpfs_work_dir target_dir allow_hide_submounts_dir \
-    disallow_readonly_dir skip_dir_overlay allow_hide_submounts \
-    skip_remount_ro target_dir_idx
+  ## Sort target_overlay_mount_list so submounts can be easily found within
+  ## it, and split it into individual paths. The same sort order as specified
+  ## in populate_proc_mount_lists is used, though it is much simpler to
+  ## implement here.
+  overlay_mount_list_str="${overlay_mount_list_str//\//"${ascii_stx}"}"
+  overlay_mount_list_str="$(LC_ALL='C' sort <<< "${overlay_mount_list_str}")"
+  overlay_mount_list_str="${overlay_mount_list_str//"${ascii_stx}"/\/}"
+  readarray -t target_overlay_mount_list <<< "${overlay_mount_list_str}"
 
-  if [ "${#target_overlay_mount_list[@]}" = '0' ]; then
-    printf "%s\n" "$0: INFO: If there are no directories to overlay, skip everything else, ok."
-    return
-  fi
-
-  cmd_wrapper safe-rm -r -f -- "${overlay_tmpfs_repo}"
-  cmd_wrapper mkdir --parents -- "${overlay_tmpfs_repo}"
-
-  # Find dirs that should not be overlaid or mounted read-only
+  ## Find and mark dirs that should not be overlaid.
   for mount_idx in "${!target_overlay_mount_list[@]}"; do
     target_overlay_mount="${target_overlay_mount_list[mount_idx]}"
     skip_dir_overlay="false"
-    skip_remount_ro='false'
     allow_hide_submounts='false'
 
-    for target_dir in "${dir_submount_list[@]}"; do
-      if [ "${target_overlay_mount}" = "${target_dir}" ]; then
+    ## If a dir has submounts, and it does not have an exception in
+    ## allow_hiding_submounts_list, prevent it from being overlaid.
+    for submount_dir in "${dir_submount_list[@]}"; do
+      if [ "${target_overlay_mount}" = "${submount_dir}" ]; then
         for allow_hide_submounts_dir in "${allow_hiding_submounts_list[@]}"; do
           if [ "${target_overlay_mount}" = "${allow_hide_submounts_dir}" ]; then
             allow_hide_submounts='true'
@@ -242,31 +409,35 @@ mount_overlays() {
           break
         fi
 
-        for disallow_readonly_dir in "${disallow_readonly_with_submounts_list[@]}"; do
-          if [ "${target_overlay_mount}" = "${disallow_readonly_dir}" ]; then
-            skip_remount_ro='true'
-            skip_dir_overlay='true'
-            break
-          fi
-        done
-        if [ "${skip_remount_ro}" = 'true' ]; then
-          break
-        fi
-
         skip_dir_overlay='true'
         break
       fi
     done
 
-    ## 'false' values can be flipped to 'true', but 'true' values should never
-    ## be flipped to 'false'.
+    ## If a mount's filesystem is marked non-overlay-able, prevent it from
+    ## being overlaid.
+    if [ "${skip_dir_overlay}" = 'false' ]; then
+      for proc_mount_idx in "${!proc_mount_path_list[@]}"; do
+        if [ "${proc_mount_path_list[proc_mount_idx]}" \
+          != "${target_overlay_mount}" ]; then
+          continue
+        fi
+        for fs_nooverlay_item in "${fs_type_nooverlay_list[@]}"; do
+          if [ "${proc_mount_type_list[proc_mount_idx]}" \
+            = "${fs_nooverlay_item}" ]; then
+            skip_dir_overlay='true'
+            break
+          fi
+        done
+      done
+    fi
+
+    ## If a directory is not going to be overlaid, mark it in the list.
     if [ "${skip_dir_overlay}" = 'true' ]; then
       skip_dir_overlay_bool_list[mount_idx]='true'
     fi
-    if [ "${skip_remount_ro}" = 'true' ]; then
-      skip_remount_ro_bool_list[mount_idx]='true'
-    fi
 
+    ## Avoid mounting overlays on mounts that are going to end up hidden.
     if [ "${allow_hide_submounts}" = 'true' ]; then
       ## Mark all submounts so that they are not overlaid.
       for target_dir_idx in "${!target_overlay_mount_list[@]}"; do
@@ -278,22 +449,33 @@ mount_overlays() {
       done
     fi
   done
+}
 
-  # Remount targeted directories read-only
+## Remounts filesystems read-only and applies tmpfs overlays.
+harden_mounts() {
+  local mount_idx target_overlay_mount tmpfs_dir tmpfs_upper_dir \
+    tmpfs_work_dir skip_dir_overlay overlay_idx
+
+  if [ "${#target_overlay_mount_list[@]}" = '0' ]; then
+    printf "%s\n" "$0: INFO: If there are no directories to overlay, skip everything else, ok."
+    return
+  fi
+
+  ## Reset the tmpfs repo.
+  cmd_wrapper safe-rm -r -f -- "${overlay_tmpfs_repo}"
+  cmd_wrapper mkdir --parents -- "${overlay_tmpfs_repo}"
+
+  ## Remount targeted directories read-only.
   for mount_idx in "${!target_overlay_mount_list[@]}"; do
     target_overlay_mount="${target_overlay_mount_list[mount_idx]}"
-    skip_remount_ro="${skip_remount_ro_bool_list[mount_idx]}"
-
-    if [ "${skip_remount_ro}" = 'true' ]; then
-      continue
-    fi
 
     if ! cmd_wrapper mount -o remount,ro -- "${target_overlay_mount}"; then
       skip_dir_overlay_bool_list[mount_idx]='true'
     fi
   done
 
-  # Mount writable overlays over those directories that are safe to overlay
+  ## Mount writable overlays over those directories that are safe to overlay.
+  overlay_idx='0'
   for mount_idx in "${!target_overlay_mount_list[@]}"; do
     target_overlay_mount="${target_overlay_mount_list[mount_idx]}"
     skip_dir_overlay="${skip_dir_overlay_bool_list[mount_idx]}";
@@ -302,7 +484,8 @@ mount_overlays() {
       continue
     fi
 
-    tmpfs_dir="${overlay_tmpfs_repo}/${mount_idx}"
+    (( overlay_idx++ )) || true
+    tmpfs_dir="${overlay_tmpfs_repo}/${overlay_idx}"
     tmpfs_upper_dir="${tmpfs_dir}/upper"
     tmpfs_work_dir="${tmpfs_dir}/work"
     cmd_wrapper mkdir --parents -- "${tmpfs_dir}"
@@ -318,41 +501,49 @@ mount_overlays() {
       -o workdir="${tmpfs_work_dir}" \
       -- \
       "${target_overlay_mount}"; then
-      ## Some filesystems don't support being the lower directory of an
-      ## overlayfs (for instance, fat32). With these directories, we simply
-      ## leave them read-only and clean up the directories that would have
-      ## been used to place a writable overlay on them.
+      ## If the overlay mount fails, simply leave it remounted read-only and
+      ## clean up the tmpfs that would have been overlaid on it.
       cmd_wrapper umount -- "${tmpfs_dir}"
       cmd_wrapper safe-rm -r -f -- "${tmpfs_dir}"
     fi
   done
 }
 
+## Finds mounts in proc_mount_path_list that contain submounts, and stores
+## those paths in dir_submount_list.
 find_submount_dirs() {
   local prev_item counter
 
-  if (( ${#target_overlay_mount_list[@]} <= 1 )); then
+  if (( ${#proc_mount_path_list[@]} <= 1 )); then
     return
   fi
 
-  prev_item="${target_overlay_mount_list[0]}"
+  prev_item="${proc_mount_path_list[0]}"
   ## counter = 1, not 0, since we're comparing each item in the list with the
   ## item before it.
-  for (( counter = 1; counter < ${#target_overlay_mount_list[@]}; counter++ )); do
-    if [[ "${target_overlay_mount_list[counter]}" =~ ^"${prev_item}" ]]; then
-      dir_submount_list+=( "${prev_item}" )
+  for (( counter = 1; counter < ${#proc_mount_path_list[@]}; counter++ )); do
+    if ! [[ "${proc_mount_path_list[counter]}" =~ ^/ ]]; then
+      prev_item="${proc_mount_path_list[counter]}"
+      continue
     fi
-    prev_item="${target_overlay_mount_list[counter]}"
+    if ! [[ "${proc_mount_path_list[counter]}" =~ ^"${prev_item}/" ]]; then
+      prev_item="${proc_mount_path_list[counter]}"
+      continue
+    fi
+    dir_submount_list+=( "${prev_item}" )
+    prev_item="${proc_mount_path_list[counter]}"
   done
 }
 
 check_in_live_mode
-get_mount_list_to_overlay
+populate_proc_mount_lists
 find_submount_dirs
+get_mount_list_to_harden
 if [ "${LIVE_HARDENER_TEST:-}" = 'true' ]; then
   printf '%s\n' "${target_overlay_mount_list[@]}"
+  printf '%s\n' "${skip_dir_overlay_bool_list[@]}"
 else
-  mount_overlays
+  harden_mounts
 fi
 
 ## TODO: breaks unit test
