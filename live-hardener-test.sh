@@ -63,6 +63,14 @@ additional_mount_table=(
   '/dev/nvme0n1p1 /home btrfs rw,noatime,compress=lzo,ssd,discard,autodefrag,subvol=/@home 0 0
 /dev/nvme0n1p1 /srv btrfs ro,noatime,compress=lzo,ssd,discard,autodefrag,subvol=/@srv 0 0
 /dev/nvme0n1p1 /var btrfs rw,noatime,compress=lzo,ssd,discard,autodefrag,subvol=/@var 0 0' # 10
+  '/dev/sda2 /run/rootfsbase ext4 rw,relatime 0 0' # 11
+  '/dev/nvme0n1p1 /var ext4 rw,relatime 0 0
+/dev/nvme0n1p2 /var/log ext4 rw,relatime 0 0' # 12
+  '/dev/nvme0n1p1 /var ext4 rw,relatime 0 0
+/dev/nvme0n1p2 /var/log ext4 rw,relatime 0 0
+/dev/nvme0n1p3 /var- ext4 rw,relatime 0 0' # 13
+  '/dev/nvme0n1p1 /boot ext4 rw,relatime 0 0
+/dev/nvme0n1p2 /boot/whatever ext4 rw,relatime 0 0' # 14
 )
 
 additional_lsblk_table=(
@@ -91,43 +99,111 @@ additional_lsblk_table=(
 /home\x0a/srv\x0a/var\x0a 1' # 9
   ' 0
 /home\x0a/srv\x0a/var\x0a 0' # 10
+  '/run/rootfsbase 0' # 11
+  '/var 0
+/var/log 0' # 12
+  '/var 0
+/var/log 0
+/var- 0' # 13
+  '/boot 0
+/boot/whatever 0' # 14
 )
 
 expected_output_table=(
   '/home
 /sys/firmware/efi/efivars
-/sys/fs/pstore' # 1
+/sys/fs/pstore
+false
+true
+false' # 1
   '/mnt/drive1
 /mnt/drive2
 /sys/firmware/efi/efivars
-/sys/fs/pstore' # 2
+/sys/fs/pstore
+false
+false
+true
+false' # 2
   '/mnt/drive2
 /sys/firmware/efi/efivars
-/sys/fs/pstore' # 3
+/sys/fs/pstore
+false
+true
+false' # 3
   '/sys/firmware/efi/efivars
-/sys/fs/pstore' # 4
+/sys/fs/pstore
+true
+false' # 4
   '/mnt/drive1
 /sys/firmware/efi/efivars
-/sys/fs/pstore' # 5
+/sys/fs/pstore
+false
+true
+false' # 5
   '/mnt/drive2
 /sys/firmware/efi/efivars
-/sys/fs/pstore' # 6
+/sys/fs/pstore
+false
+true
+false' # 6
   '/sys/firmware/efi/efivars
-/sys/fs/pstore' # 7
+/sys/fs/pstore
+true
+false' # 7
   '/home
 /srv
 /sys/firmware/efi/efivars
 /sys/fs/pstore
-/var' # 8
+/var
+false
+false
+true
+false
+false' # 8
   '/home
 /srv
 /sys/firmware/efi/efivars
 /sys/fs/pstore
-/var' # 9
+/var
+false
+false
+true
+false
+false' # 9
   '/home
 /sys/firmware/efi/efivars
 /sys/fs/pstore
-/var' # 10
+/var
+false
+true
+false
+false' # 10
+  '/sys/firmware/efi/efivars
+/sys/fs/pstore
+true
+false' # 11
+  '/sys/firmware/efi/efivars
+/sys/fs/pstore
+/var/log
+true
+false
+false' # 12
+  '/sys/firmware/efi/efivars
+/sys/fs/pstore
+/var/log
+/var-
+true
+false
+false
+false' # 13
+  '/boot
+/boot/whatever
+/sys/firmware/efi/efivars
+/sys/fs/pstore
+false
+true
+true
+false' # 14
 )
 
 kernel_cmdline='BOOT_IMAGE=/boot/vmlinuz-6.1.0-37-amd64 root=/dev/disk/by-uuid/26ada0c0-1165-4098-884d-aafd2220c2c6 ro mitigations=auto,nosmt nosmt=force spectre_v2=on spectre_bhi=on spec_store_bypass_disable=on ssbd=force-on l1tf=full,force kvm-intel.vmentry_l1d_flush=always mds=full,nosmt tsx=off tsx_async_abort=full,nosmt kvm.nx_huge_pages=force l1d_flush=on mmio_stale_data=full,nosmt retbleed=auto,nosmt kvm.mitigate_smt_rsb=1 gather_data_sampling=force reg_file_data_sampling=on slab_nomerge slab_debug=FZ init_on_alloc=1 init_on_free=1 page_alloc.shuffle=1 pti=on randomize_kstack_offset=on vsyscall=none debugfs=off kfence.sample_interval=100 vdso32=0 efi_pstore.pstore_disable=1 amd_iommu=force_isolation intel_iommu=on iommu=force iommu.passthrough=0 iommu.strict=1 efi=disable_early_pci_dma random.trust_bootloader=off random.trust_cpu=off extra_latent_entropy rootovl boot-role=sysmaint systemd.unit=sysmaint-boot.target loglevel=0 quiet rd.emergency=halt rd.shell=0'
