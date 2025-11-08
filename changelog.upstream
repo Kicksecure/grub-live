@@ -1,3 +1,29 @@
+commit e4b6784371a47cc7c1812469a8ce4ecbce14e815
+Merge: ed87230 c12dc45
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 8 01:28:34 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit c12dc45a02e594c848531c465080afc8bf3accbf
+Merge: df6fae1 ed87230
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Nov 7 13:57:12 2025 -0600
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit df6fae11922052c0a1fcb4c32e6078e85757a829
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Nov 7 13:54:02 2025 -0600
+
+    Fix a submount edge-case in live-hardener, improve performance of submount detection and add regression tests (mostly done by ChatGPT Codex)
+
+commit ed87230d354bd6e44621dddbf3c0e3fb44c711df
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 7 14:09:02 2025 +0000
+
+    bumped changelog version
+
 commit 0336157edc24a371080fab7195e29f6d30e2fb83
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Nov 7 09:08:51 2025 -0500
