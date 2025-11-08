@@ -443,7 +443,7 @@ get_mount_list_to_harden() {
       for target_dir_idx in "${!target_overlay_mount_list[@]}"; do
         target_dir="${target_overlay_mount_list[target_dir_idx]}"
         if [ "${target_dir}" != "${target_overlay_mount}" ] \
-          && [[ "${target_dir}" =~ ^"${target_overlay_mount}" ]]; then
+          && [[ "${target_dir}" == "${target_overlay_mount%/}/"* ]]; then
           skip_dir_overlay_bool_list[target_dir_idx]='true'
         fi
       done
@@ -522,11 +522,11 @@ find_submount_dirs() {
   ## counter = 1, not 0, since we're comparing each item in the list with the
   ## item before it.
   for (( counter = 1; counter < ${#proc_mount_path_list[@]}; counter++ )); do
-    if ! [[ "${proc_mount_path_list[counter]}" =~ ^/ ]]; then
+    if ! [[ "${proc_mount_path_list[counter]}" == /* ]]; then
       prev_item="${proc_mount_path_list[counter]}"
       continue
     fi
-    if ! [[ "${proc_mount_path_list[counter]}" =~ ^"${prev_item}/" ]]; then
+    if ! [[ "${proc_mount_path_list[counter]}" == "${prev_item%/}/"* ]]; then
       prev_item="${proc_mount_path_list[counter]}"
       continue
     fi
