@@ -1,3 +1,25 @@
+commit 43609a0ed81ca14a756978d98e4d42f05652b05f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 13 06:53:15 2025 -0500
+
+    comment
+
+commit 99a97fb442a6e976f3547b4453f86cc946643992
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Nov 13 06:52:17 2025 -0500
+
+    set `nohibernate` kernel parameter
+    
+    Thanks to @desi_fubu for the suggestion!
+    
+    https://forums.kicksecure.com/t/support-for-hibernation/1349/6
+
+commit a0a6ee9014a633f54b97e5b8f07f05fb26de488e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 8 07:06:20 2025 +0000
+
+    bumped changelog version
+
 commit e4b6784371a47cc7c1812469a8ce4ecbce14e815
 Merge: ed87230 c12dc45
 Author: Patrick Schleizer <adrelanos@whonix.org>
