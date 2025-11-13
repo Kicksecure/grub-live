@@ -89,6 +89,9 @@ grub-live $0: ERROR: dracut is not installed. Support for other initrd generator
    exit 0
 fi
 
+## https://forums.kicksecure.com/t/support-for-hibernation/1349/6
+GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX nohibernate "
+
 ## LIVE Mode | USER Session (non-advanced)
 if test -x /etc/grub.d/10_00_linux_dist ; then
    /etc/grub.d/10_00_linux_dist
