@@ -73,7 +73,7 @@ grub-live $0: ERROR: It has been detected that this system is using dracut but b
 
    ## using Debian forked upstream module 90overlay-root
    ## Disabled on Debian trixie.
-   ## GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl"
+   ## GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl "
 
    ## using dracut upstream module 90overlayfs
    ## NOTE: overlayfs module needed
