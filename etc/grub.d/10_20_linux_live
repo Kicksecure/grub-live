@@ -13,7 +13,7 @@ set -o allexport
 make_boot_entry='true'
 
 ## NOTE: Code duplication.
-## Copied from: helper-scripts /usr/libexec/helper-scripts/package_installed_check.bsh
+## Copied from: helper-scripts /usr/libexec/helper-scripts/package_installed_check.sh
 pkg_installed() {
    local package_name dpkg_query_output
    local requested_action status error_state
