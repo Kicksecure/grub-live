@@ -72,12 +72,13 @@ grub-live $0: ERROR: It has been detected that this system is using dracut but b
    ## https://www.kicksecure.com/wiki/Grub-live#Developer_Information
 
    ## using Debian forked upstream module 90overlay-root
-   ## Disabled on Debian trixie.
-   ## GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl "
+   GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl "
 
    ## using dracut upstream module 90overlayfs
    ## NOTE: overlayfs module needed
-   GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.overlayfs=1 "
+   ## Disabled on Debian trixie because it breaks live mode with BTRFS. See:
+   ## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1121043
+   #GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.overlayfs=1 "
 
    ## Unnecessary! It's for systems where you have an immutable base filesystem and a persistent overlay,
    ## and you want to make the overlay read-only, putting another overlay on top of it.
