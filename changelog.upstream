@@ -1,3 +1,22 @@
+commit 85f79543f65ce8a2e6bebd6290d6bddeb9f24c05
+Merge: 8c66b1d 4236f9f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 21 02:22:24 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 4236f9fdd1072dc4239e2244442b859735494048
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Nov 19 21:36:42 2025 -0600
+
+    Switch back to overlay-root module and rootovl parameter for live boot, rd.live.overlay.overlayfs is broken with BTRFS
+
+commit 8c66b1d366a82bc6c4c118848ee4904d06378d1e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 14 06:19:36 2025 +0000
+
+    bumped changelog version
+
 commit 1a77dcf25847bfc4d4482d18b57ba87ca420544d
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Nov 14 00:39:56 2025 -0500
