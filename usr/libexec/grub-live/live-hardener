@@ -11,6 +11,13 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 fi
 
 source /usr/libexec/helper-scripts/wc-test.sh
+
+## sets the following variables:
+## live_status_detected_live_mode_environment_pretty
+## live_status_detected_live_mode_environment_machine
+## live_status_word_pretty
+## live_status_detected
+## live_status_maybe_iso_live_message
 source /usr/libexec/helper-scripts/live-mode.sh
 
 ## The location where tmpfs directories are created. These are used as the upper
