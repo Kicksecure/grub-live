@@ -1,3 +1,15 @@
+commit de11ab4d19bfca5d508a2578b1f3684930718ae8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Nov 25 13:24:31 2025 -0500
+
+    stop omitting `dmsquash-live` dracut module because it breaks ISO boot
+
+commit 9e929e1fcc6cada193cdd8f041278976ce8ebdcc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Nov 24 11:58:35 2025 +0000
+
+    bumped changelog version
+
 commit 6ddbbfbfa76ed042e0d2c391ece2166de232f9af
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Nov 24 05:59:07 2025 -0500
