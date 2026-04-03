@@ -82,7 +82,6 @@ fs_type_nooverlay_list=(
   'iso9660'
   'jfs'
   'vfat'
-  'overlay'
 )
 
 ## Mounts we want to overlay even if it requires hiding submounts.
@@ -156,8 +155,11 @@ check_in_live_mode() {
 
   printf '%s\n' "live_status_detected_live_mode_environment_machine=${live_status_detected_live_mode_environment_machine}" 1>&2
 
-  if [ "${live_status_detected_live_mode_environment_machine}" = 'false' ] \
-    || [[ "${live_status_detected_live_mode_environment_machine}" =~ ^iso-live ]]; then
+  if [ "${live_status_detected_live_mode_environment_machine}" = 'false' ]; then
+    printf "%s\n" "$0: INFO: Not in live mode, exiting, ok."
+    exit 0
+  fi
+  if [[ "${live_status_detected_live_mode_environment_machine}" =~ ^iso-live ]]; then
     printf "%s\n" "$0: INFO: iso-live mode detected, exiting, ok."
     exit 0
   fi
