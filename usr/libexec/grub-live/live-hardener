@@ -265,7 +265,7 @@ get_mount_list_to_harden() {
   ## located on a removable disk.
   readarray -t lsblk_raw_list <<< "${lsblk_output}"
   if (( ${#lsblk_raw_list[@]} <= 1 )) \
-    || [ -z "${lsblk_raw_list[0]:-}" ]; then
+    && [ -z "${lsblk_raw_list[0]:-}" ]; then
     printf "%s\n" "$0: ERROR: 'lsblk_raw_list' array is empty!" 1>&2
     exit 1
   fi
