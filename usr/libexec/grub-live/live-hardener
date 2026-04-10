@@ -295,16 +295,6 @@ get_mount_list_to_harden() {
       if [ -z "${lsblk_raw_path}" ]; then
         continue
       fi
-      ## lsblk might not ever output a trailing newline escape under normal
-      ## conditions, in which case it would be better to error out if one was
-      ## found. However, our regression tests include them, so either they are
-      ## faulty, or lsblk can or used to output trailing newline escapes under
-      ## normal conditions.
-      #if [ -z "${lsblk_raw_path}" ]; then
-      #  printf '%s\n' "$0: ERROR: lsblk returned an empty mount path! Original lsblk output:"
-      #  printf '%s\n' "${lsblk_output}"
-      #  exit 1
-      #fi
       lsblk_path_list+=( "${lsblk_raw_path}" )
       lsblk_removable_list+=( "${lsblk_removable}" )
     done
