@@ -75,14 +75,13 @@ fs_type_whitelist=(
 
 ## Filesystems we want to remount read-only but not overlay. Filesystems that
 ## OverlayFS considers "weird" should be listed here, see
-## https://lkml.kernel.org/linux-ext4/CAOQ4uxgPXBazE-g2v=T_vOvnr_f0ZHyKYZ4wvn7A3ePatZrhnQ@mail.gmail.com/T/
+## https://lore.kernel.org/linux-ext4/CAOQ4uxgPXBazE-g2v=T_vOvnr_f0ZHyKYZ4wvn7A3ePatZrhnQ@mail.gmail.com/T/
 fs_type_nooverlay_list=(
   'cifs'
   'efivarfs'
   'iso9660'
   'jfs'
   'vfat'
-  'overlay'
 )
 
 ## Mounts we want to overlay even if it requires hiding submounts.
@@ -156,8 +155,10 @@ check_in_live_mode() {
 
   printf '%s\n' "live_status_detected_live_mode_environment_machine=${live_status_detected_live_mode_environment_machine}" 1>&2
 
-  if [ "${live_status_detected_live_mode_environment_machine}" = 'false' ] \
-    || [[ "${live_status_detected_live_mode_environment_machine}" =~ ^iso-live ]]; then
+  if [ "${live_status_detected_live_mode_environment_machine}" = 'false' ]; then
+    printf '%s\n' "$0: INFO: Not in live mode, exiting, ok."
+    exit 0
+  elif [[ "${live_status_detected_live_mode_environment_machine}" =~ ^iso-live ]]; then
     printf "%s\n" "$0: INFO: iso-live mode detected, exiting, ok."
     exit 0
   fi
@@ -262,8 +263,7 @@ get_mount_list_to_harden() {
   ## specifying mount paths, the other specifying whether each mount path is
   ## located on a removable disk.
   readarray -t lsblk_raw_list <<< "${lsblk_output}"
-  if (( ${#lsblk_raw_list[@]} <= 1 )) \
-    || [ -z "${lsblk_raw_list[0]:-}" ]; then
+  if [ -z "${lsblk_raw_list[0]:-}" ]; then
     printf "%s\n" "$0: ERROR: 'lsblk_raw_list' array is empty!" 1>&2
     exit 1
   fi

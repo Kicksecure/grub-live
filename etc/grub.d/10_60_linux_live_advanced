@@ -61,7 +61,7 @@ if pkg_installed dracut ; then
    true "grub-live $0: INFO: dracut detected, ok."
    if ! test -x /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh ; then
       echo "\
-grub-live $0: ERROR: It has been detected that this system is using dracut but but file /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh is not executable. This means that no live mode boot menu entry will be added.
+grub-live $0: ERROR: It has been detected that this system is using dracut but file /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh is not executable. This means that no live mode boot menu entry will be added.
 " >&2
       exit 0
    fi
@@ -97,7 +97,7 @@ elif test -x /etc/grub.d/10_linux ; then
    /etc/grub.d/10_linux
 else
    echo "\
-grub-live $0: ERROR: Neither file '/etc/grub.d/10_00_linux_dist' (package: 'dist-base-files') nor file '/etc/grub.d/10_linux' (package: 'grub-common') exists. This means that no live mode boot menu entry will be added.
+grub-live $0: ERROR: Neither file '/etc/grub.d/10_50_linux_dist_advanced' (package: 'dist-base-files') nor file '/etc/grub.d/10_linux' (package: 'grub-common') exists. This means that no live mode boot menu entry will be added.
 " >&2
    exit 0
 fi
