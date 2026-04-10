@@ -1,3 +1,22 @@
+commit a7d9155b0261ecc962736cf948ea259636566356
+Merge: 92139cd c881ee4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 10 04:12:13 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit c881ee4ec90c856e68d0c2ef2a1f16e05bac7ecb
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu Apr 9 23:17:39 2026 -0400
+
+    Fix logic errors and typos in grub-live hardener and boot scripts (from Claude Code)
+
+commit 92139cdf5c7d08d1699546320e22afe79dd13d47
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Feb 4 10:29:33 2026 +0000
+
+    bumped changelog version
+
 commit be5a1f32880c1baa17e0ce3b6f2f1e092f82f35b
 Merge: 864dc62 c8670ae
 Author: Patrick Schleizer <adrelanos@whonix.org>
