@@ -186,16 +186,16 @@ populate_proc_mount_lists() {
   ## This sort order is equivalent to an alphabetic sort, except for the
   ## forward slash is given the absolute highest priority. The easiest way to
   ## adjust the sort order this way is to replace the forward slash with some
-  ## character that sorts higher than anything else. The ASCII control code
+  ## character that sorts before anything else. The ASCII control code
   ## STX is a good candidate for this, because it is extremely unlikely to
-  ## occur in a real path, and it is the character with the second-highest
-  ## sorting order in the C locale.
+  ## occur in a real path, and it has the second-lowest byte value in the
+  ## C locale (after SOH), ensuring it sorts before any typical path character.
   ##
   ## We want to sort the entire contents of proc_mount_contents by the second
   ## field, so in order to accomplish this, we use a Decorate-Sort-Undecorate
   ## routine. The decorator is the second field from proc_mount_contents, with
-  ## all slashes replaced with the SOH control code. (If we wanted to cope
-  ## with the possibility of a SOH character in a path, we could replace SOH
+  ## all slashes replaced with the STX control code. (If we wanted to cope
+  ## with the possibility of a STX character in a path, we could replace STX
   ## characters with forward slashes, but this is probably unnecessary.)
   ##
   ## We need the separator between the decorator and the rest of the mount
@@ -214,6 +214,10 @@ populate_proc_mount_lists() {
     proc_mount_path="${proc_mount_path//\//"${ascii_stx}"}"
     proc_mount_annotated_str+="${proc_mount_path}${ascii_soh}${line}"$'\n'
   done <<< "${proc_mount_contents}"
+
+  ## Strip trailing newline to prevent sort from seeing an extra empty line
+  ## (which would sort first in C locale and create a ghost empty element).
+  proc_mount_annotated_str="${proc_mount_annotated_str%$'\n'}"
 
   ## Sort and undecorate the lines.
   proc_mount_annotated_str="$(LC_ALL='C' sort \
@@ -247,7 +251,7 @@ get_mount_list_to_harden() {
     proc_mount_idx fs_attr_list fs_attr_item skip_fs_remount_ro is_removable \
     is_fs_whitelisted fs_whitelist_idx proc_mount_type proc_mount_path \
     disallow_readonly_dir submount_dir mount_idx target_overlay_mount \
-    skip_dir_overlay allow_hide_submounts submount_dir allow_hide_submounts \
+    skip_dir_overlay allow_hide_submounts \
     fs_nooverlay_item allow_hide_submounts_dir target_dir_idx target_dir
 
   ## Ensure lsblk_output and proc_mount_contents are set
@@ -286,6 +290,21 @@ get_mount_list_to_harden() {
     lsblk_removable="$(cut -d' ' -f2 <<< "${lsblk_raw_str}")"
 
     for lsblk_raw_path in "${lsblk_raw_path_list[@]}"; do
+      ## Skip empty entries caused by trailing newline escapes in lsblk's
+      ## multi-mount path output.
+      if [ -z "${lsblk_raw_path}" ]; then
+        continue
+      fi
+      ## lsblk might not ever output a trailing newline escape under normal
+      ## conditions, in which case it would be better to error out if one was
+      ## found. However, our regression tests include them, so either they are
+      ## faulty, or lsblk can or used to output trailing newline escapes under
+      ## normal conditions.
+      #if [ -z "${lsblk_raw_path}" ]; then
+      #  printf '%s\n' "$0: ERROR: lsblk returned an empty mount path! Original lsblk output:"
+      #  printf '%s\n' "${lsblk_output}"
+      #  exit 1
+      #fi
       lsblk_path_list+=( "${lsblk_raw_path}" )
       lsblk_removable_list+=( "${lsblk_removable}" )
     done
@@ -386,6 +405,11 @@ get_mount_list_to_harden() {
     skip_dir_overlay_bool_list+=( 'false' )
   done
 
+  ## If no mounts need hardening, leave target_overlay_mount_list empty.
+  if [ -z "${overlay_mount_list_str}" ]; then
+    return
+  fi
+
   ## Trim a trailing newline from overlay_mount_list_str to keep it from
   ## becoming an additional array element.
   overlay_mount_list_str="$(head -c-1 <<< "${overlay_mount_list_str}")"
@@ -439,6 +463,9 @@ get_mount_list_to_harden() {
             break
           fi
         done
+        if [ "${skip_dir_overlay}" = 'true' ]; then
+          break
+        fi
       done
     fi
 

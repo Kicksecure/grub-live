@@ -38,16 +38,8 @@ pkg_installed() {
    return 1
 }
 
-grub_distributor_appendix="LIVE Mode | USER Session | For disposable use"
-if [ -e '/etc/kicksecure_version' ]; then
-   GRUB_DISTRIBUTOR="$grub_distributor_appendix"
-elif pkg_installed 'whonix-ws-network-conf'; then
-   GRUB_DISTRIBUTOR="$grub_distributor_appendix"
-elif pkg_installed 'whonix-gw-network-conf'; then
-   GRUB_DISTRIBUTOR="$grub_distributor_appendix"
-else
-   GRUB_DISTRIBUTOR="$grub_distributor_appendix"
-fi
+grub_distributor_appendix="LIVE Mode | USER Session | disposable use"
+GRUB_DISTRIBUTOR="$grub_distributor_appendix"
 GRUB_DISABLE_RECOVERY="true"
 
 if ! pkg_installed grub-live ; then
