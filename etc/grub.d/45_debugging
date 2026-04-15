@@ -10,9 +10,9 @@ set -e
 
 output() {
    ## Write to stdout to add this to grub.cfg.
-   echo "## $@"
+   echo "## $*"
    ## Write to stderr so it is shown in console and not added to the grub config file.
-   echo "$@" >&2
+   echo "$*" >&2
 }
 
 ## Do this only in chroot (during the build process).
