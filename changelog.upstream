@@ -1,3 +1,82 @@
+commit ec6b0a74ed3cac001b4c8220912aff3574fea689
+Merge: c0708ac 1fb6160
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 15 06:17:10 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 1fb6160768dbe25936feacd0b90de9a6789c03eb
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon Apr 13 23:26:54 2026 -0400
+
+    Modified and squashed commit of the following:
+
+    commit 0d5b4801dae558da04dee7dfd9d102395e4f3c7e
+    Author: Claude <noreply@anthropic.com>
+    Date:   Fri Apr 10 09:56:47 2026 +0000
+
+        Fix comment/code mismatches, duplicate locals, and missing break
+
+        - Fix comment that says slashes are replaced with "SOH" when the code
+          actually uses STX (ascii_stx). SOH is used as the decorator/line
+          separator, not for slash replacement.
+        - Remove duplicate variable declarations in get_mount_list_to_harden:
+          submount_dir was declared on lines 253 and 254, and
+          allow_hide_submounts was declared twice on line 254.
+        - Add missing early break in the nooverlay filesystem check: when
+          skip_dir_overlay is set to 'true' by the inner loop, only the inner
+          loop breaks; the outer loop over proc_mount_path_list continues
+          iterating needlessly over all remaining mount entries.
+
+        https://claude.ai/code/session_01WHDK9nRRjJnnUtUUBswH1D
+
+    commit 3c896308748914ff4f5bd59a00454e91fcc1284a
+    Author: Claude <noreply@anthropic.com>
+    Date:   Fri Apr 10 09:42:35 2026 +0000
+
+        Fix ghost empty elements in proc_mount and lsblk arrays, fix comment
+
+        - Fix ghost empty first element in proc_mount_path_list (and sibling
+          arrays): the while loop in populate_proc_mount_lists appends a
+          trailing newline to proc_mount_annotated_str, and the here-string
+          adds another; sort sees the resulting empty line and places it first
+          in C locale, creating a spurious empty element at index 0. Fix by
+          stripping the trailing newline before sorting.
+        - Fix ghost empty entry in lsblk_path_list when parsing multi-mount
+          devices: lsblk encodes newline-separated mount paths with trailing
+          \x0a, which after printf %b decoding and readarray via here-string
+          produces a trailing empty array element. Fix by skipping empty
+          entries in the lsblk path loop.
+        - Fix misleading comment that described STX as having the
+          "second-highest sorting order" in C locale; STX (0x02) actually has
+          one of the lowest byte values, meaning it sorts earliest.
+
+        https://claude.ai/code/session_01WHDK9nRRjJnnUtUUBswH1D
+
+    commit 6f106622a1af49d5fb7f7f1dbd07dd728649d1c7
+    Author: Claude <noreply@anthropic.com>
+    Date:   Fri Apr 10 09:34:35 2026 +0000
+
+        Fix logic errors and minor bugs across grub-live scripts
+
+        - Fix empty mount list edge case in live-hardener where readarray on an
+          empty here-string creates a ghost array element, causing harden_mounts
+          to attempt operations on an empty mount path
+        - Fix inconsistent grub_distributor_appendix text between 10_20_linux_live
+          ("disposable use") and 10_60_linux_live_advanced ("For disposable use")
+        - Remove dead conditional branches in both GRUB scripts where all
+          if/elif/else branches assigned GRUB_DISTRIBUTOR to the same value
+        - Use $* instead of $@ in 45_debugging output() to avoid
+          implementation-defined behavior when embedded in a double-quoted string
+
+        https://claude.ai/code/session_01WHDK9nRRjJnnUtUUBswH1D
+
+commit c0708ac839728c5fd3323d198006a9e22f2fa9a1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 10 09:20:37 2026 +0000
+
+    bumped changelog version
+
 commit a7d9155b0261ecc962736cf948ea259636566356
 Merge: 92139cd c881ee4
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -102,9 +181,9 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Nov 13 06:52:17 2025 -0500
 
     set `nohibernate` kernel parameter
-    
+
     Thanks to @desi_fubu for the suggestion!
-    
+
     https://forums.kicksecure.com/t/support-for-hibernation/1349/6
 
 commit a0a6ee9014a633f54b97e5b8f07f05fb26de488e
@@ -548,7 +627,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue May 13 13:09:08 2025 -0400
 
     avoid spurious systemd-growfs error message when booting into live mode
-    
+
     add `/usr/lib/systemd/system/systemd-growfs@.service.d/30_grub-live.conf`
 
 commit 370341f322c817c978f6d2f6faaf1e331e137a56
@@ -836,7 +915,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Apr 1 04:46:32 2025 -0400
 
     implement LIVE mode SYSMAINT
-    
+
     https://forums.kicksecure.com/t/live-mode-sysmaint/979
 
 commit 1c9e8831d97e0b2f00a637ba962369711d4cfd98
@@ -1099,11 +1178,11 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Sep 26 22:57:29 2024 -0400
 
     add comments for port to overlayfs in time for Debian trixie
-    
+
     Thanks to @ArrayBolt3 for the investigation!
-    
+
     https://www.kicksecure.com/wiki/Dev/todo#grub-live_with_90overlayfs
-    
+
     https://www.kicksecure.com/wiki/Progress_Reports#Investigate_using_dracut's_upstream_overlayfs_feature
 
 commit 2257bf7ee9544bacc7213595cd129e132ec31511
@@ -1177,7 +1256,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Mar 6 03:18:07 2024 -0500
 
     fix initramfs-tools vs dracut package detection
-    
+
     https://forums.kicksecure.com/t/updating-kicksecure-to-17-1-1-5-breaks-grub-live/358
 
 commit 42b89f3342012b1e0443ec8e36685369830b265e
@@ -1215,7 +1294,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jan 12 23:40:30 2024 -0500
 
     check if a supported initrd generator is installed
-    
+
     before adding a live mode boot menu entry
 
 commit b1f915040551e5ee2ff33eb60a740d3de8df3dc6
@@ -1223,9 +1302,9 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jan 12 23:36:08 2024 -0500
 
     fix detection if initramfs-tools is installed
-    
+
     https://forums.kicksecure.com/t/updating-kicksecure-to-17-1-1-5-breaks-grub-live/358
-    
+
     Thanks to kivk for the bug report!
 
 commit c99761589f2d00e2bd8ca7e78a5441baf191847e
@@ -1251,7 +1330,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Nov 11 13:41:27 2023 -0500
 
     change license to AGPL-3+
-    
+
     https://forums.whonix.org/t/license-change-to-agplv3/17455
 
 commit f4714681d6b3897ac67de7d419bb36979f8046a1
@@ -1343,7 +1422,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jul 7 16:52:50 2023 -0400
 
     fix dracut compatibility
-    
+
     https://forums.kicksecure.com/t/dracut-debain-12-kicksecure-distromorph-for-ram-wipe/274
 
 commit 82e5a899f187c4ff7c3de9905d3a7252b1152471
@@ -1425,9 +1504,9 @@ Date:   Mon Oct 3 08:16:48 2022 -0400
     keep grub live boot menu related entries grouped together,
     instead of having one entry per installed kernel
     implemented by removing `GRUB_DISABLE_SUBMENU=y`
-    
+
     Thanks to @TNT_BOM_BOM for the suggestion!
-    
+
     https://forums.whonix.org/t/reduce-numbers-of-grub-live-mode-boot-menu-entries/15710
 
 commit 30fcf7594ce5fffc13b21ca870c9880eeaf95f3f
@@ -1495,7 +1574,7 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Sep 12 14:30:24 2021 -0400
 
     fix grub-live (initramfs-tools version)
-    
+
     https://forums.whonix.org/t/bullseye-live-boot-needs-grub-disable-linux-uuid-true-parameter-in-etc-grub-d-11-linux-live/9066
     https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=994138
 
@@ -1546,9 +1625,9 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Aug 29 15:19:44 2021 -0400
 
     fix, remove dracut `kernel_cmdline="rootovl"`
-    
+
     since that is conditionally set in grub boot menu anyhow
-    
+
     and otherwise the system would always boot into live mode
 
 commit 3bded2153eb311ee6f8571bf67483d3514d97ed0
@@ -1568,11 +1647,11 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Aug 29 12:38:20 2021 -0400
 
     add dracut support
-    
+
     Based on, and thanks to @friedrich12!
-    
+
     https://github.com/friedrich12/dracut-grub-live
-    
+
     https://forums.whonix.org/t/replacing-initramfs-tools-with-dracut/4487/10
 
 commit e71c0b18281985ffdf60adb2917ef874596a5e76
@@ -1750,9 +1829,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Aug 5 05:05:04 2019 -0400
 
     remove unneeded dependency live-config-systemd
-    
+
     since causing log spam /lib/systemd/system-generators/live-config-getty-generator
-    
+
     https://forums.whonix.org/t/whonix-live-mode-amnesia-amnesic-non-persistent-anti-forensics/3894/158
 
 commit dc589a4e3698ea2fca08f2079691c5b9120f930b
@@ -1832,7 +1911,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Apr 19 11:04:35 2019 +0000
 
     set kernel parameter nopersistence
-    
+
     https://forums.whonix.org/t/whonix-live-mode-amnesia-amnesic-non-persistent-anti-forensics/3894/126
 
 commit 06f24e8ba268dbe66ec3ec219e7bc0b2ccbd4339
@@ -1876,18 +1955,18 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Mar 1 14:32:39 2019 +0000
 
     add improved legal protections clauses
-    
+
     The license for software created by Whonix is the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version with additional terms applicable per GNU GPL version 3 section 7.
-    
+
     The additional terms are based on the Doom 3 license which is Debian refers to as `GPL-3+-with-id-software-additional-terms`, which is Debian DFSG [1] (The Debian Free Software Guidelines) approved and which is therefore suitable for Debian `main`. Whonix made applied minimal changes to it:
-    
+
     * Rewrite `The Doom 3 BFG Edition GPL Source Code` to the more common `this program` which is used throughout the GPL.
     * Added a "trump clause" [2], in other words, any conflicts or disputes between the additional terms and the GPLv3 shall be resolved in favor of the GPLv3 by adding `Notwithstanding any other provision of this License` (as mentioned in GPL FAQ [3]) at the beginning of the additional terms.
-    
+
     [1] https://www.debian.org/social_contract#guidelines
     [2] https://www.fsf.org/news/canonical-updated-licensing-terms
     [3] https://www.gnu.org/licenses/gpl-faq.html#v3Notwithstanding
-    
+
     For more considerations, see also:
     https://www.whonix.org/wiki/Dev/Licensing
 
@@ -1910,7 +1989,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Dec 14 04:51:16 2018 -0500
 
     Merge pull request #3 from Algernon-01/master
-    
+
     Small fix for buster.
 
 commit e174542e094cc15935a80e70fe5e9a5f90a83ae9
@@ -1950,7 +2029,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Jul 27 21:29:37 2018 +0800
 
     Merge pull request #2 from Algernon-01/master
-    
+
     Removed apparmor alias and merged it into apparmor-profiles-anondist
 
 commit 0becdbc8a68216e2d7f446b71c77751d65db0a84
@@ -1978,7 +2057,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Jul 19 22:25:21 2018 +0800
 
     Merge pull request #1 from Algernon-01/master
-    
+
     fixed apparmor path
 
 commit 8de50a97dcb145b6c6aac49ed3950899d4f51c74
@@ -2048,7 +2127,7 @@ Author: Algernon <33966997+Algernon-01@users.noreply.github.com>
 Date:   Sat Jan 6 18:21:04 2018 +0000
 
     Merge pull request #1 from adrelanos/master
-    
+
     misc
 
 commit 44dd63857b87713d991d735c05bf71971a24c7b7
@@ -2080,9 +2159,9 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Mon Dec 11 16:41:33 2017 +0000
 
     fix, export variables
-    
+
     this is required if the variables were not already set and exported
-    
+
     an empty exported variable by the parent is ignored by bash default
 
 commit ca6dfe7687caf6d0cbfedee57ea96c23725f0974
@@ -2133,7 +2212,7 @@ Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Sat Dec 9 13:51:34 2017 +0100
 
     revert to original on which this file is based on /etc/grub.d/10_linux
-    
+
     so we can revert this change to see the diff
 
 commit 2bd6a7fd5a1003e2c872cf3c40975eb724f43ab8
