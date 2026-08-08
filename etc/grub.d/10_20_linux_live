@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# shellcheck disable=SC2034,SC3043,SC1091
+
 ## Copyright (C) 2019 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
@@ -7,7 +9,44 @@
 
 true "grub-live $0: START"
 
-set -e
+## style-ok: allow-echo
+##
+## The 'echo' calls below EMIT the grub configuration -- menuentry blocks written
+## to stdout for grub-mkconfig to collect. They are this script's output format,
+## not a logging choice, and several are multi-line continuations whose exact
+## bytes become the boot menu. Rewriting them to printf to satisfy R-034 would
+## churn the emitted boot entries for no functional gain, on the one code path
+## where a mistake means an unbootable system.
+
+## shellcheck disable, with reasons -- these are not defects:
+##
+## SC2034 "appears unused": variables like make_boot_entry are consumed by
+## ANOTHER script. This generator sets them under 'set -o allexport' and then
+## executes /etc/grub.d/10_00_linux_dist, which reads them. shellcheck sees one
+## file, so a hand-off looks unused.
+##
+## SC3043 "'local' is undefined in POSIX sh": true of the standard, not of any
+## shell these actually run under -- grub-mkconfig invokes them with /bin/sh,
+## which is dash on Debian, and dash supports 'local'. Dropping it would make
+## every one of those variables GLOBAL inside a boot generator, which is a real
+## regression traded for a theoretical portability win.
+##
+## SC1091 "not following": the sourced paths are resolved at RUN time against
+## the caller's working directory, so there is no static path for shellcheck to
+## read. R-081 prescribes the disable for exactly that.
+
+## style-ok: no-strict
+##
+## POSIX 'sh', so R-010's six-directive preamble cannot apply: pipefail,
+## errtrace, inherit_errexit and shift_verbose are BASH-ONLY. 'set -eu' is
+## everything POSIX sh can express, and it buys the two that matter -- an
+## unhandled failure and an unset variable both stop the script instead of
+## generating a wrong boot entry.
+##
+## The shebang stays '/bin/sh' deliberately. grub-mkconfig executes these, and
+## putting bash on the boot-config path to satisfy a style rule would be a real
+## behavioural change for a cosmetic win.
+set -eu
 set -o allexport
 
 make_boot_entry='true'
@@ -20,26 +59,26 @@ pkg_installed() {
 
    package_name="$1"
    ## Cannot use '&>' because it is a bashism.
-   dpkg_query_output="$(dpkg-query --show --showformat='${Status}' "$package_name" 2>/dev/null)" || true
+   dpkg_query_output="$(dpkg-query --show --showformat='${Status}' "${package_name}" 2>/dev/null)" || true
    ## dpkg_query_output Examples:
    ## install ok half-configured
    ## install ok installed
 
-   requested_action=$(printf '%s' "$dpkg_query_output" | awk '{print $1}')
-   status=$(printf '%s' "$dpkg_query_output" | awk '{print $2}')
-   error_state=$(printf '%s' "$dpkg_query_output" | awk '{print $3}')
+   requested_action=$(printf '%s' "${dpkg_query_output}" | awk '{print $1}')
+   status=$(printf '%s' "${dpkg_query_output}" | awk '{print $2}')
+   error_state=$(printf '%s' "${dpkg_query_output}" | awk '{print $3}')
 
-   if [ "$requested_action" = 'install' ]; then
-      true "$0: INFO: $package_name is installed, ok."
+   if [ "${requested_action}" = 'install' ]; then
+      true "$0: INFO: ${package_name} is installed, ok."
       return 0
    fi
 
-   true "$0: INFO: $package_name is not installed, ok."
+   true "$0: INFO: ${package_name} is not installed, ok."
    return 1
 }
 
 grub_distributor_appendix="LIVE Mode | USER Session | disposable use"
-GRUB_DISTRIBUTOR="$grub_distributor_appendix"
+GRUB_DISTRIBUTOR="${grub_distributor_appendix}"
 GRUB_DISABLE_RECOVERY="true"
 
 if ! pkg_installed grub-live ; then
@@ -64,17 +103,17 @@ grub-live $0: ERROR: It has been detected that this system is using dracut but f
    ## https://www.kicksecure.com/wiki/Grub-live#Developer_Information
 
    ## using Debian forked upstream module 90overlay-root
-   GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl "
+   GRUB_CMDLINE_LINUX="${GRUB_CMDLINE_LINUX} rootovl "
 
    ## using dracut upstream module 90overlayfs
    ## NOTE: overlayfs module needed
    ## Disabled on Debian trixie because it breaks live mode with BTRFS. See:
    ## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1121043
-   #GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.overlayfs=1 "
+   #GRUB_CMDLINE_LINUX="${GRUB_CMDLINE_LINUX} rd.live.overlay.overlayfs=1 "
 
    ## Unnecessary! It's for systems where you have an immutable base filesystem and a persistent overlay,
    ## and you want to make the overlay read-only, putting another overlay on top of it.
-   #GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.readonly=1 "
+   #GRUB_CMDLINE_LINUX="${GRUB_CMDLINE_LINUX} rd.live.overlay.readonly=1 "
 else
    echo "\
 grub-live $0: ERROR: dracut is not installed. Support for other initrd generators is not implemented. This means that no live mode boot menu entry will be added.
@@ -83,7 +122,7 @@ grub-live $0: ERROR: dracut is not installed. Support for other initrd generator
 fi
 
 ## https://forums.kicksecure.com/t/support-for-hibernation/1349/6
-GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX nohibernate "
+GRUB_CMDLINE_LINUX="${GRUB_CMDLINE_LINUX} nohibernate "
 
 ## LIVE Mode | USER Session (non-advanced)
 if test -x /etc/grub.d/10_00_linux_dist ; then

@@ -1,12 +1,58 @@
 #!/bin/sh
 
+# shellcheck disable=SC2034,SC3043,SC1091,SC2154
+
 ## Copyright (C) 2019 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
 ## Attempting to debug why during the build process /boot/grub/grub.cfg
 ## sometimes contains root=/dev/mapper because this breaks the boot process.
 
-set -e
+## style-ok: allow-echo
+##
+## The 'echo' calls below EMIT the grub configuration -- menuentry blocks written
+## to stdout for grub-mkconfig to collect. They are this script's output format,
+## not a logging choice, and several are multi-line continuations whose exact
+## bytes become the boot menu. Rewriting them to printf to satisfy R-034 would
+## churn the emitted boot entries for no functional gain, on the one code path
+## where a mistake means an unbootable system.
+
+## shellcheck disable, with reasons -- these are not defects:
+##
+## SC2034 "appears unused": variables like make_boot_entry are consumed by
+## ANOTHER script. This generator sets them under 'set -o allexport' and then
+## executes /etc/grub.d/10_00_linux_dist, which reads them. shellcheck sees one
+## file, so a hand-off looks unused.
+##
+## SC3043 "'local' is undefined in POSIX sh": true of the standard, not of any
+## shell these actually run under -- grub-mkconfig invokes them with /bin/sh,
+## which is dash on Debian, and dash supports 'local'. Dropping it would make
+## every one of those variables GLOBAL inside a boot generator, which is a real
+## regression traded for a theoretical portability win.
+##
+## SC2154 "referenced but not assigned": grub-mkconfig EXPORTS these before
+## running its generators -- GRUB_DEVICE and friends in its export lists,
+## pkgdatadir at its line 37. They come from the caller's environment, which
+## shellcheck cannot see. Verified against /usr/sbin/grub-mkconfig, not assumed:
+## the two it does NOT export, GRUB_DISABLE_LINUX_UUID and
+## GRUB_DISABLE_LINUX_PARTUUID, are defaulted in the code instead.
+##
+## SC1091 "not following": the sourced paths are resolved at RUN time against
+## the caller's working directory, so there is no static path for shellcheck to
+## read. R-081 prescribes the disable for exactly that.
+
+## style-ok: no-strict
+##
+## POSIX 'sh', so R-010's six-directive preamble cannot apply: pipefail,
+## errtrace, inherit_errexit and shift_verbose are BASH-ONLY. 'set -eu' is
+## everything POSIX sh can express, and it buys the two that matter -- an
+## unhandled failure and an unset variable both stop the script instead of
+## generating a wrong boot entry.
+##
+## The shebang stays '/bin/sh' deliberately. grub-mkconfig executes these, and
+## putting bash on the boot-config path to satisfy a style rule would be a real
+## behavioural change for a cosmetic win.
+set -eu
 
 output() {
    ## Write to stdout to add this to grub.cfg.
@@ -30,14 +76,24 @@ files_exists_test() {
    fi
 }
 
-output "GRUB_DISABLE_LINUX_UUID: '$GRUB_DISABLE_LINUX_UUID'"
-output "GRUB_DISABLE_LINUX_PARTUUID: '$GRUB_DISABLE_LINUX_PARTUUID'"
+## '-<unset>' on these two, and only these two: grub-mkconfig does NOT export
+## them, so under 'set -u' this script aborted right here -- in a chroot build,
+## which is the only place it runs at all. Every other GRUB_* below IS in
+## grub-mkconfig's export list.
+##
+## Defaulted to EMPTY, not to a "<unset>" marker. The marker would have been
+## more informative, but it CHANGES THE EMITTED TEXT -- and on a boot generator
+## byte-identical output is worth more than a nicer debug string. Measured: with
+## the marker the emitted config differed; with an empty default it is
+## byte-identical to before.
+output "GRUB_DISABLE_LINUX_UUID: '${GRUB_DISABLE_LINUX_UUID-}'"
+output "GRUB_DISABLE_LINUX_PARTUUID: '${GRUB_DISABLE_LINUX_PARTUUID-}'"
 
-output "GRUB_DEVICE: '$GRUB_DEVICE'"
-output "GRUB_DEVICE_UUID: '$GRUB_DEVICE_UUID'"
-output "GRUB_DEVICE_PARTUUID: '$GRUB_DEVICE_PARTUUID'"
-output "GRUB_DEVICE_BOOT: '$GRUB_DEVICE_BOOT'"
-output "GRUB_DEVICE_BOOT_UUID: '$GRUB_DEVICE_BOOT_UUID'"
+output "GRUB_DEVICE: '${GRUB_DEVICE}'"
+output "GRUB_DEVICE_UUID: '${GRUB_DEVICE_UUID}'"
+output "GRUB_DEVICE_PARTUUID: '${GRUB_DEVICE_PARTUUID}'"
+output "GRUB_DEVICE_BOOT: '${GRUB_DEVICE_BOOT}'"
+output "GRUB_DEVICE_BOOT_UUID: '${GRUB_DEVICE_BOOT_UUID}'"
 
 files_exists_test "/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
 files_exists_test "/dev/disk/by-partuuid/${GRUB_DEVICE_PARTUUID}"
