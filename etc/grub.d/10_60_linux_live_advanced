@@ -9,15 +9,6 @@
 
 true "grub-live $0: START"
 
-## style-ok: allow-echo
-##
-## The 'echo' calls below EMIT the grub configuration -- menuentry blocks written
-## to stdout for grub-mkconfig to collect. They are this script's output format,
-## not a logging choice, and several are multi-line continuations whose exact
-## bytes become the boot menu. Rewriting them to printf to satisfy R-034 would
-## churn the emitted boot entries for no functional gain, on the one code path
-## where a mistake means an unbootable system.
-
 ## shellcheck disable, with reasons -- these are not defects:
 ##
 ## SC2034 "appears unused": variables like make_boot_entry are consumed by
@@ -82,7 +73,7 @@ GRUB_DISTRIBUTOR="${grub_distributor_appendix}"
 GRUB_DISABLE_RECOVERY="true"
 
 if ! pkg_installed grub-live ; then
-   echo "\
+   printf '%s\n' "\
 grub-live $0: ERROR: Package grub-live is not installed. File '$0' is probably a leftover. This means that no live mode boot menu entry will be added.
 " >&2
    exit 0
@@ -91,7 +82,7 @@ fi
 if pkg_installed dracut ; then
    true "grub-live $0: INFO: dracut detected, ok."
    if ! test -x /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh ; then
-      echo "\
+      printf '%s\n' "\
 grub-live $0: ERROR: It has been detected that this system is using dracut but file /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh is not executable. This means that no live mode boot menu entry will be added.
 " >&2
       exit 0
@@ -112,7 +103,7 @@ grub-live $0: ERROR: It has been detected that this system is using dracut but f
    ## and you want to make the overlay read-only, putting another overlay on top of it.
    #GRUB_CMDLINE_LINUX="${GRUB_CMDLINE_LINUX} rd.live.overlay.readonly=1 "
 else
-   echo "\
+   printf '%s\n' "\
 grub-live $0: ERROR: dracut is not installed. Support for other initrd generators is not implemented. This means that no live mode boot menu entry will be added.
 " >&2
    exit 0
@@ -127,7 +118,7 @@ if test -x /etc/grub.d/10_50_linux_dist_advanced ; then
 elif test -x /etc/grub.d/10_linux ; then
    /etc/grub.d/10_linux
 else
-   echo "\
+   printf '%s\n' "\
 grub-live $0: ERROR: Neither file '/etc/grub.d/10_50_linux_dist_advanced' (package: 'dist-base-files') nor file '/etc/grub.d/10_linux' (package: 'grub-common') exists. This means that no live mode boot menu entry will be added.
 " >&2
    exit 0
