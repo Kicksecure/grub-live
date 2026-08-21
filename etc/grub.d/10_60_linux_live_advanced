@@ -9,35 +9,9 @@
 
 true "grub-live $0: START"
 
-## shellcheck disable, with reasons -- these are not defects:
-##
-## SC2034 "appears unused": variables like make_boot_entry are consumed by
-## ANOTHER script. This generator sets them under 'set -o allexport' and then
-## executes /etc/grub.d/10_00_linux_dist, which reads them. shellcheck sees one
-## file, so a hand-off looks unused.
-##
-## SC3043 "'local' is undefined in POSIX sh": true of the standard, not of any
-## shell these actually run under -- grub-mkconfig invokes them with /bin/sh,
-## which is dash on Debian, and dash supports 'local'. Dropping it would make
-## every one of those variables GLOBAL inside a boot generator, which is a real
-## regression traded for a theoretical portability win.
-##
-## SC1091 "not following": the sourced paths are resolved at RUN time against
-## the caller's working directory, so there is no static path for shellcheck to
-## read. R-081 prescribes the disable for exactly that.
-
 ## style-ok: no-strict
-##
-## POSIX 'sh', so R-010's six-directive preamble cannot apply: pipefail,
-## errtrace, inherit_errexit and shift_verbose are BASH-ONLY. 'set -eu' is
-## everything POSIX sh can express, and it buys the two that matter -- an
-## unhandled failure and an unset variable both stop the script instead of
-## generating a wrong boot entry.
-##
-## The shebang stays '/bin/sh' deliberately. grub-mkconfig executes these, and
-## putting bash on the boot-config path to satisfy a style rule would be a real
-## behavioural change for a cosmetic win.
-set -eu
+set -o errexit
+set -o nounset
 set -o allexport
 
 make_boot_entry='true'
