@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# shellcheck disable=SC2034,SC3043,SC1091
+
 ## Copyright (C) 2019 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
@@ -7,7 +9,9 @@
 
 true "grub-live $0: START"
 
-set -e
+## style-ok: no-strict
+set -o errexit
+set -o nounset
 set -o allexport
 
 make_boot_entry='true'
@@ -20,30 +24,30 @@ pkg_installed() {
 
    package_name="$1"
    ## Cannot use '&>' because it is a bashism.
-   dpkg_query_output="$(dpkg-query --show --showformat='${Status}' "$package_name" 2>/dev/null)" || true
+   dpkg_query_output="$(dpkg-query --show --showformat='${Status}' "${package_name}" 2>/dev/null)" || true
    ## dpkg_query_output Examples:
    ## install ok half-configured
    ## install ok installed
 
-   requested_action=$(printf '%s' "$dpkg_query_output" | awk '{print $1}')
-   status=$(printf '%s' "$dpkg_query_output" | awk '{print $2}')
-   error_state=$(printf '%s' "$dpkg_query_output" | awk '{print $3}')
+   requested_action=$(printf '%s' "${dpkg_query_output}" | awk '{print $1}')
+   status=$(printf '%s' "${dpkg_query_output}" | awk '{print $2}')
+   error_state=$(printf '%s' "${dpkg_query_output}" | awk '{print $3}')
 
-   if [ "$requested_action" = 'install' ]; then
-      true "$0: INFO: $package_name is installed, ok."
+   if [ "${requested_action}" = 'install' ]; then
+      true "$0: INFO: ${package_name} is installed, ok."
       return 0
    fi
 
-   true "$0: INFO: $package_name is not installed, ok."
+   true "$0: INFO: ${package_name} is not installed, ok."
    return 1
 }
 
 grub_distributor_appendix="LIVE Mode | USER Session | disposable use"
-GRUB_DISTRIBUTOR="$grub_distributor_appendix"
+GRUB_DISTRIBUTOR="${grub_distributor_appendix}"
 GRUB_DISABLE_RECOVERY="true"
 
 if ! pkg_installed grub-live ; then
-   echo "\
+   printf '%s\n' "\
 grub-live $0: ERROR: Package grub-live is not installed. File '$0' is probably a leftover. This means that no live mode boot menu entry will be added.
 " >&2
    exit 0
@@ -55,7 +59,7 @@ fi
 if pkg_installed dracut ; then
    true "grub-live $0: INFO: dracut detected, ok."
    if ! test -x /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh ; then
-      echo "\
+      printf '%s\n' "\
 grub-live $0: ERROR: It has been detected that this system is using dracut but file /usr/lib/dracut/modules.d/90overlay-root/overlay-mount.sh is not executable. This means that no live mode boot menu entry will be added.
 " >&2
       exit 0
@@ -64,26 +68,26 @@ grub-live $0: ERROR: It has been detected that this system is using dracut but f
    ## https://www.kicksecure.com/wiki/Grub-live#Developer_Information
 
    ## using Debian forked upstream module 90overlay-root
-   GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rootovl "
+   GRUB_CMDLINE_LINUX="${GRUB_CMDLINE_LINUX} rootovl "
 
    ## using dracut upstream module 90overlayfs
    ## NOTE: overlayfs module needed
    ## Disabled on Debian trixie because it breaks live mode with BTRFS. See:
    ## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1121043
-   #GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.overlayfs=1 "
+   #GRUB_CMDLINE_LINUX="${GRUB_CMDLINE_LINUX} rd.live.overlay.overlayfs=1 "
 
    ## Unnecessary! It's for systems where you have an immutable base filesystem and a persistent overlay,
    ## and you want to make the overlay read-only, putting another overlay on top of it.
-   #GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX rd.live.overlay.readonly=1 "
+   #GRUB_CMDLINE_LINUX="${GRUB_CMDLINE_LINUX} rd.live.overlay.readonly=1 "
 else
-   echo "\
+   printf '%s\n' "\
 grub-live $0: ERROR: dracut is not installed. Support for other initrd generators is not implemented. This means that no live mode boot menu entry will be added.
 " >&2
    exit 0
 fi
 
 ## https://forums.kicksecure.com/t/support-for-hibernation/1349/6
-GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX nohibernate "
+GRUB_CMDLINE_LINUX="${GRUB_CMDLINE_LINUX} nohibernate "
 
 ## LIVE Mode | USER Session (non-advanced)
 if test -x /etc/grub.d/10_00_linux_dist ; then
@@ -91,7 +95,7 @@ if test -x /etc/grub.d/10_00_linux_dist ; then
 elif test -x /etc/grub.d/10_linux ; then
    /etc/grub.d/10_linux
 else
-   echo "\
+   printf '%s\n' "\
 grub-live $0: ERROR: Neither file '/etc/grub.d/10_00_linux_dist' (package: 'dist-base-files') nor file '/etc/grub.d/10_linux' (package: 'grub-common') exists. This means that no live mode boot menu entry will be added.
 " >&2
    exit 0

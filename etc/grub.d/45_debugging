@@ -1,18 +1,22 @@
 #!/bin/sh
 
+# shellcheck disable=SC2034,SC3043,SC1091,SC2154
+
 ## Copyright (C) 2019 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
 ## Attempting to debug why during the build process /boot/grub/grub.cfg
 ## sometimes contains root=/dev/mapper because this breaks the boot process.
 
-set -e
+## style-ok: no-strict
+set -o errexit
+set -o nounset
 
 output() {
    ## Write to stdout to add this to grub.cfg.
-   echo "## $*"
+   printf '%s\n' "## $*"
    ## Write to stderr so it is shown in console and not added to the grub config file.
-   echo "$*" >&2
+   printf '%s\n' "$*" >&2
 }
 
 ## Do this only in chroot (during the build process).
@@ -30,14 +34,14 @@ files_exists_test() {
    fi
 }
 
-output "GRUB_DISABLE_LINUX_UUID: '$GRUB_DISABLE_LINUX_UUID'"
-output "GRUB_DISABLE_LINUX_PARTUUID: '$GRUB_DISABLE_LINUX_PARTUUID'"
+output "GRUB_DISABLE_LINUX_UUID: '${GRUB_DISABLE_LINUX_UUID-}'"
+output "GRUB_DISABLE_LINUX_PARTUUID: '${GRUB_DISABLE_LINUX_PARTUUID-}'"
 
-output "GRUB_DEVICE: '$GRUB_DEVICE'"
-output "GRUB_DEVICE_UUID: '$GRUB_DEVICE_UUID'"
-output "GRUB_DEVICE_PARTUUID: '$GRUB_DEVICE_PARTUUID'"
-output "GRUB_DEVICE_BOOT: '$GRUB_DEVICE_BOOT'"
-output "GRUB_DEVICE_BOOT_UUID: '$GRUB_DEVICE_BOOT_UUID'"
+output "GRUB_DEVICE: '${GRUB_DEVICE}'"
+output "GRUB_DEVICE_UUID: '${GRUB_DEVICE_UUID}'"
+output "GRUB_DEVICE_PARTUUID: '${GRUB_DEVICE_PARTUUID}'"
+output "GRUB_DEVICE_BOOT: '${GRUB_DEVICE_BOOT}'"
+output "GRUB_DEVICE_BOOT_UUID: '${GRUB_DEVICE_BOOT_UUID}'"
 
 files_exists_test "/dev/disk/by-uuid/${GRUB_DEVICE_UUID}"
 files_exists_test "/dev/disk/by-partuuid/${GRUB_DEVICE_PARTUUID}"
